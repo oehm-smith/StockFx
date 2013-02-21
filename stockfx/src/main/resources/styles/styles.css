@@ -1,7 +1,7 @@
 /* Application wide styles */
 
 .label {
-    -fx-font-size: 12px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
@@ -32,3 +32,24 @@
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
+/* *** */
+.header {
+    -fx-padding: 20;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, yellow 0%, white 100%);
+    -fx-text-fill: white;
+    -fx-alignment: center;
+    -fx-font: 14pt "Tahoma Bold";
+}
+
+.title {
+    -fx-font: 28pt "Tahoma Bold";
+}
+
+.tagline {
+    -fx-font-size: 12px;
+    
+}
+
+.body {
+    -fx-padding: 20;
+}

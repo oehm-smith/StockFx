@@ -1,20 +1,17 @@
 package com.tintuna.stockfx.controller;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.HPos;
-import javafx.scene.control.ListView;
+import javafx.scene.Node;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 public class Application implements Initializable {
 
@@ -22,35 +19,33 @@ public class Application implements Initializable {
 	private VBox portfolioList;
 	@FXML
 	private GridPane gridPane;
+	@FXML
+	private TabPane tabPane;
+
+	private TabManager tabManager;
 
 	public Application() {
 	}
 
 	//
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		// Scroll Pane
-		List<String> strList = new ArrayList<>();
-		ObservableList<String> contents = FXCollections.observableList(strList);
-		ListView<String> listx = new ListView<>(contents);
-		portfolioList.getChildren().add(listx);
-		VBox.setVgrow(listx, Priority.ALWAYS);
+		tabManager = new TabManager(tabPane);
+		FXMLLoader loader = null;
+		try
+        {
+            loader = new FXMLLoader();
+            loader.load(getClass().getResourceAsStream("/fxml/Main.fxml"));
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException("Unable to load Main.fxml", e);
+        }
+		Tab mainTab = new Tab("Portfolios");
+		mainTab.setContent((Node) loader.getRoot());
+		tabPane.getTabs().add(mainTab);
 
-		for (int i = 0; i < 20; i++) {
-			String x = Integer.toString(i);
-			// portfolioList.setVgrow(x, Priority.ALWAYS);
-
-			strList.add(x);
-		}
-
-		// GridPane
-		for (int i = 0; i < 20; i++) {
-			Text name = new Text("Row " + Integer.toString(i));
-			Text data = new Text("Data " + Integer.toString(i));
-			name.setStyle("-fx-font: 10px Tahoma; -fx-fill:blue");
-			gridPane.add(name, 0, i);
-			gridPane.add(data, 1, i);
-			GridPane.setHalignment(name, HPos.RIGHT);
-			GridPane.setHalignment(data, HPos.LEFT);
-		}
+		tabManager.addNewDocument("one", null, null);
+		tabManager.addNewDocument("two", null, null);
+		tabManager.addNewDocument("three", null, null);
 	}
 }
