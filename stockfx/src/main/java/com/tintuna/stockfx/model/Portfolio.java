@@ -29,6 +29,11 @@ public class Portfolio {
 	private StringProperty name;
 	private StringProperty type;
 
+	public Portfolio(String name, String type) {
+		setName(name);
+		setType(type);
+	}
+
 	public String getName() {
 		if (name == null) {
 			return "";
@@ -63,5 +68,9 @@ public class Portfolio {
 			type = new SimpleStringProperty();
 		}
 		return type;
+	}
+	
+	public String toString() {
+		return getName()+" : "+getType();
 	}
 }
