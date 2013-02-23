@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -18,6 +19,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
+import com.tintuna.stockfx.application.AppFactory;
+import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.model.Portfolio;
 
 public class PortfolioController extends BorderPane implements Initializable {
@@ -33,6 +36,11 @@ public class PortfolioController extends BorderPane implements Initializable {
 	private GridPane gridPane;
 	@FXML
 	private TabPane tabPane;
+	@FXML
+	private Button newPortfolioButton;
+	@FXML
+	private Button newStockButton;
+	
 
 	public PortfolioController(AppFactory controllerFactory) {
 		this.controllerFactory = controllerFactory;
@@ -85,17 +93,25 @@ public class PortfolioController extends BorderPane implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		initializePortfolioTable();
+		initializeNewPortfolioButton();
+	}
+	
+	private void initializePortfolioTable() {
 		// adding something to see
 		TableColumn<Portfolio, String> col = new TableColumn<>("Portfolio");
 		portfolioTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		col.setCellValueFactory(new PropertyValueFactory<Portfolio,String>("Name"));
-		final ObservableList<Portfolio> data = FXCollections.observableArrayList();//new Portfolio("Portfolio 1", "Home"),new Portfolio("Portfolio 2", "Home"));
-		for (Integer i : new int[] { 1, 2, 3 }) {
-			data.add(new Portfolio("Portfolio " + i.toString(), "Home"));
-		}
-		portfolioTable.setItems(data);
+		portfolioTable.setItems(MainApplication.getModelFactory().getPortfolios().getPortfolios());
 		portfolioTable.getColumns().clear();
 		portfolioTable.getColumns().add(col);
+	}
+
+	private void initializeNewPortfolioButton() {
+		newPortfolioButton.setOnAction(new EventHandler<ActionEvent>() {
+		   public void handle(ActionEvent e) {
+			   MainApplication.getModelFactory().getPortfolios().newPortfolios();
+		   }});
 	}
 
 }

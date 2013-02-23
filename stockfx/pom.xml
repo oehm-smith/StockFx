@@ -31,7 +31,7 @@
 				<version>1.3</version>
 				<configuration>
 
-					<mainClass>com.tintuna.stockfx.MainApp</mainClass>
+					<mainClass>com.tintuna.stockfx.application.MainApplication</mainClass>
 
 					<!-- only required if signing the jar file -->
 					<keyStoreAlias>example-user</keyStoreAlias>
