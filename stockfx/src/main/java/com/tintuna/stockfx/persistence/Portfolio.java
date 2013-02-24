@@ -7,34 +7,18 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.xml.bind.annotation.XmlRootElement;
 
-//@Entity
-//public class Portfolio {
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//	private long id;
-//
-//	private String name;
-//	private String type;
-//
-//	public String getName() {
-//		return name;
-//	}
-//
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-//
-//	public String getType() {
-//		return type;
-//	}
-//
-//	public void setType(String type) {
-//		this.type = type;
-//	}
-//}
 
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "Portfolio.findAll", query = "SELECT p FROM Portfolio p"),
+    @NamedQuery(name = "Portfolio.findById", query = "SELECT p FROM Portfolio p WHERE p.id = :id"),
+    @NamedQuery(name = "Portfolio.findByName", query = "SELECT p FROM Portfolio p WHERE p.name = :name"),
+    @NamedQuery(name = "Portfolio.findByType", query = "SELECT p FROM Portfolio p WHERE p.name = :name")})
+@XmlRootElement
 public class Portfolio {
 	private long id;
 

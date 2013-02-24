@@ -3,6 +3,7 @@ package com.tintuna.stockfx.application;
 import com.tintuna.stockfx.controller.MainController;
 import com.tintuna.stockfx.controller.PortfolioController;
 import com.tintuna.stockfx.controller.TabManager;
+import com.tintuna.stockfx.db.Crud;
 import com.tintuna.stockfx.model.PortfolioLoader;
 
 public class AppFactory {
@@ -10,6 +11,7 @@ public class AppFactory {
 	private TabManager tabManager;
 	private PortfolioController portfolioController; 
 	private PortfolioLoader portfolioLoader;
+	private Crud crudService;
 
 	public MainController getMainController() {
 		if (mainController == null) {
@@ -42,5 +44,12 @@ public class AppFactory {
 			throw new RuntimeException("portfolioLoader needs to be set");
 		}
 		return portfolioLoader;
+	}
+
+	public Crud getCrudService() {
+		if (crudService == null) {
+			crudService = new Crud();
+		}
+		return crudService;
 	}
 }

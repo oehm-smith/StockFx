@@ -14,4 +14,10 @@ public class PortfolioLoaderTesting implements PortfolioLoader {
 		return data;
 	}
 
+	@Override
+	public void savePortfolioData(List<Portfolio> portfolios) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

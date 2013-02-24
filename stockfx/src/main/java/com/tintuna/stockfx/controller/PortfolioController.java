@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -21,7 +22,7 @@ import javafx.scene.layout.VBox;
 
 import com.tintuna.stockfx.application.AppFactory;
 import com.tintuna.stockfx.application.MainApplication;
-import com.tintuna.stockfx.model.Portfolio;
+import com.tintuna.stockfx.persistence.Portfolio;
 
 public class PortfolioController extends BorderPane implements Initializable {
 	private AppFactory controllerFactory;
@@ -40,7 +41,6 @@ public class PortfolioController extends BorderPane implements Initializable {
 	private Button newPortfolioButton;
 	@FXML
 	private Button newStockButton;
-	
 
 	public PortfolioController(AppFactory controllerFactory) {
 		this.controllerFactory = controllerFactory;
@@ -95,23 +95,47 @@ public class PortfolioController extends BorderPane implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		initializePortfolioTable();
 		initializeNewPortfolioButton();
+		initializeNewStockButton();
 	}
-	
+
 	private void initializePortfolioTable() {
 		// adding something to see
 		TableColumn<Portfolio, String> col = new TableColumn<>("Portfolio");
 		portfolioTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		col.setCellValueFactory(new PropertyValueFactory<Portfolio,String>("Name"));
-		portfolioTable.setItems(MainApplication.getModelFactory().getPortfolios().getPortfolios());
+		col.setCellValueFactory(new PropertyValueFactory<Portfolio, String>("Name"));
+		initializePortfolioTableData();
 		portfolioTable.getColumns().clear();
 		portfolioTable.getColumns().add(col);
 	}
 
-	private void initializeNewPortfolioButton() {
-		newPortfolioButton.setOnAction(new EventHandler<ActionEvent>() {
-		   public void handle(ActionEvent e) {
-			   MainApplication.getModelFactory().getPortfolios().newPortfolios();
-		   }});
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void initializePortfolioTableData() {
+		MainApplication.getModelFactory().getPortfolios().addListener(new ListChangeListener() {
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change c) {
+				System.out.println("onChanged table data");
+				portfolioTable.setItems(MainApplication.getModelFactory().getPortfolios().getPortfolios());
+			}
+			
+		});
+		portfolioTable.setItems(MainApplication.getModelFactory().getPortfolios().getPortfolios());
 	}
 
+	private void initializeNewPortfolioButton() {
+		newPortfolioButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				MainApplication.getModelFactory().getPortfolios().newPortfolio();
+			}
+		});
+	}
+
+	private void initializeNewStockButton() {
+		newStockButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				MainApplication.getModelFactory().getPortfolios().persist();
+			}
+		});
+	}
 }

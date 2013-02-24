@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tintuna.stockfx.model.ModelFactory;
+import com.tintuna.stockfx.model.PortfolioLoaderDB;
 import com.tintuna.stockfx.model.PortfolioLoaderTesting;
 import com.tintuna.stockfx.persistence.Portfolio;
 
@@ -27,6 +28,7 @@ public class MainApplication extends Application {
 	
 	private static AppFactory appFactory = new AppFactory();
 	private static ModelFactory modelFactory = new ModelFactory();
+	private static ServiceFactory serviceFactory = new ServiceFactory();
 	
 	public static AppFactory getAppFactory() {
 		return appFactory;
@@ -34,6 +36,10 @@ public class MainApplication extends Application {
 
 	public static ModelFactory getModelFactory() {
 		return modelFactory;
+	}
+	
+	public static ServiceFactory getServiceFactory() {
+		return serviceFactory;
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -64,7 +70,8 @@ public class MainApplication extends Application {
 
 
 	private void setDependencies() {
-		appFactory.setPortfolioLoader(new PortfolioLoaderTesting());
+//		appFactory.setPortfolioLoader(new PortfolioLoaderTesting());
+		appFactory.setPortfolioLoader(new PortfolioLoaderDB());
 	}
 
 	private void startDatabase() {
@@ -79,10 +86,10 @@ public class MainApplication extends Application {
 		System.out.println("Size: " + portfolioList.size());
 
 		// Create new todo
-		em.getTransaction().begin();
-		Portfolio todo = new Portfolio("Test persistence","play");
-		em.persist(todo);
-		em.getTransaction().commit();
+//		em.getTransaction().begin();
+//		Portfolio todo = new Portfolio("Test persistence","play");
+//		em.persist(todo);
+//		em.getTransaction().commit();
 
 		em.close();
 	}
