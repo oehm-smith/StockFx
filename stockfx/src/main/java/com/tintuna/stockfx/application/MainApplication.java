@@ -15,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tintuna.stockfx.model.ModelFactory;
-import com.tintuna.stockfx.model.PortfolioLoaderDB;
-import com.tintuna.stockfx.model.PortfolioLoaderTesting;
 import com.tintuna.stockfx.persistence.Portfolio;
 
 public class MainApplication extends Application {
@@ -63,15 +61,13 @@ public class MainApplication extends Application {
 		appFactory.getTabManager().setTabPane(appFactory.getMainController().getTabPane());
 		
 		appFactory.getTabManager().addNewDocument("Portfolios", appFactory.getPortfolioController().getRoot());
-		appFactory.getTabManager().addNewDocument("one", null, null);
-		appFactory.getTabManager().addNewDocument("two", null, null);
-		appFactory.getTabManager().addNewDocument("three", null, null);
+		appFactory.getTabManager().addNewDocument("one", "");
+		appFactory.getTabManager().addNewDocument("two", "");
+		appFactory.getTabManager().addNewDocument("three", "");
 	}
 
 
 	private void setDependencies() {
-//		appFactory.setPortfolioLoader(new PortfolioLoaderTesting());
-		appFactory.setPortfolioLoader(new PortfolioLoaderDB());
 	}
 
 	private void startDatabase() {

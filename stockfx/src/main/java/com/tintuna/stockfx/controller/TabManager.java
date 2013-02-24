@@ -4,8 +4,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
-import com.tintuna.stockfx.model.ModelI;
-
 public class TabManager implements TabI {
 	TabPane tabPane;
 
@@ -27,7 +25,7 @@ public class TabManager implements TabI {
 		return tabPane;
 	}
 	@Override
-	public void addNewDocument(String name, String type, ModelI model) {
+	public void addNewDocument(String name, String type) {
 		getTabPane().getTabs().add(new Tab(name));
 	}
 

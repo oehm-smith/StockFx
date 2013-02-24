@@ -11,7 +11,6 @@ import com.tintuna.stockfx.persistence.Portfolio;
 
 public class Portfolios {
 	ObservableList<Portfolio> portfolios;
-	PortfolioLoader loader = null;
 
 	public Portfolios() {
 		portfolios = FXCollections.observableArrayList();
