@@ -8,24 +8,27 @@ import javafx.collections.ObservableList;
 
 import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.persistence.Portfolio;
+import com.tintuna.stockfx.persistence.Stock;
 
 public class Portfolios {
-	ObservableList<Portfolio> portfolios;
+	private ObservableList<Portfolio> portfolios;
 
 	public Portfolios() {
 		portfolios = FXCollections.observableArrayList();
-		update();
+		updatePortfoliosAll();
 	}
 
-	
-	public void update() {
+	public void updatePortfolioList(Portfolio p) {
+		portfolios.add(p);
+	}
+
+	public void updatePortfoliosAll() {
 		List<Portfolio> portList = MainApplication.getServiceFactory().getPortfolioService().findAll();
 		portfolios.clear();
 		portfolios.addAll(portList);
 	}
 
 	public ObservableList<Portfolio> getPortfolios() {
-		// List<Portfolio> portList = MainApplication.getAppFactory().getPortfolioLoader().loadPortfoliosData();
 		return portfolios;
 	}
 
@@ -33,19 +36,18 @@ public class Portfolios {
 		this.portfolios = portfolios;
 	}
 
-	public void addListener(ListChangeListener listener) {
+	public void addPortfoliosListener(ListChangeListener listener) {
 		portfolios.addListener(listener);
 	}
 
+	public ObservableList<Stock> getPortfoliosStocks(Portfolio p) {
+		System.out.println("-> getPortfoliosStocks - they are:"+p.getobservableStocksInThisPortfolio());
+		return p.getobservableStocksInThisPortfolio();
+	}
+	
 	public void newPortfolio() {
 		Portfolio p = new Portfolio("New Portfolio", "Work");
-		// portfolios.add(new Portfolio("New Portfolio", "Work"));
 		MainApplication.getServiceFactory().getPortfolioService().create(p);
-		update();
+		updatePortfolioList(p);
 	}
-
-	public void persist() {
-		// MainApplication.getAppFactory().getPortfolioLoader().savePortfolioData(portfolios);
-	}
-
 }

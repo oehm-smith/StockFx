@@ -1,7 +1,5 @@
 package com.tintuna.stockfx.model;
 
-import javafx.collections.ObservableList;
-
 public class ModelFactory {
 	private Portfolios portfolios;
 	

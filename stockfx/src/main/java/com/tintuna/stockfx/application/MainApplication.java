@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tintuna.stockfx.model.ModelFactory;
 import com.tintuna.stockfx.persistence.Portfolio;
+import com.tintuna.stockfx.persistence.Stock;
 
 public class MainApplication extends Application {
 
@@ -45,12 +46,7 @@ public class MainApplication extends Application {
 	}
 
 	public void start(Stage stage) throws Exception {
-
-		startDatabase();
-//		String fxmlFile = "/fxml/Main.fxml";
-//		log.debug("Loading FXML for main view from: {}", fxmlFile);
-//		FXMLLoader loader = new FXMLLoader();
-//		Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
+		databaseDebugPrintout();
 		setDependencies();
 		Scene scene = new Scene(appFactory.getMainController().getRoot(), 1000, 700);
 		scene.getStylesheets().add("/styles/styles.css");
@@ -70,9 +66,10 @@ public class MainApplication extends Application {
 	private void setDependencies() {
 	}
 
-	private void startDatabase() {
+	public static void databaseDebugPrintout() {
 		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 		EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
 		// Read the existing entries and write to console
 		Query q = em.createQuery("select t from Portfolio t");
 		List<Portfolio> portfolioList = q.getResultList();
@@ -81,61 +78,13 @@ public class MainApplication extends Application {
 		}
 		System.out.println("Size: " + portfolioList.size());
 
-		// Create new todo
-//		em.getTransaction().begin();
-//		Portfolio todo = new Portfolio("Test persistence","play");
-//		em.persist(todo);
-//		em.getTransaction().commit();
-
+		Query q2 = em.createQuery("select s from Stock s");
+		List<Stock> stockList = q2.getResultList();
+		for (Stock stock : stockList) {
+			System.out.println(stock);
+		}
+		System.out.println("Size: " + stockList.size());
+		em.getTransaction().commit();
 		em.close();
 	}
-
-	// private static final Random random = new Random();
-	//
-	// private static void ensureVisible(ScrollPane pane, Node node) {
-	// double width = pane.getContent().getBoundsInLocal().getWidth();
-	// double height = pane.getContent().getBoundsInLocal().getHeight();
-	//
-	// double x = node.getBoundsInParent().getMaxX();
-	// double y = node.getBoundsInParent().getMaxY();
-	//
-	// // scrolling values range from 0 to 1
-	// pane.setVvalue(y/height);
-	// pane.setHvalue(x/width);
-	//
-	// // just for usability
-	// node.requestFocus();
-	// }
-	//
-	// @Override
-	// public void start(Stage primaryStage) {
-	//
-	// final ScrollPane root = new ScrollPane();
-	// final Pane content = new Pane();
-	// root.setContent(content);
-	//
-	// // put 10 buttons at random places with same handler
-	// final EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
-	//
-	// public void handle(ActionEvent arg0) {
-	// int index = random.nextInt(10);
-	// System.out.println("Moving to button " + index);
-	// ensureVisible(root, content.getChildren().get(index));
-	// }
-	// };
-	//
-	// for (int i = 0; i < 10; i++) {
-	// Button btn = new Button("next " + i);
-	// btn.setOnAction(handler);
-	// content.getChildren().add(btn);
-	// btn.relocate(0, 200*i);
-	// }
-	//
-	// Scene scene = new Scene(root, 300, 250);
-	// primaryStage.setScene(scene);
-	// primaryStage.show();
-	//
-	// // run once to don't search for a first button manually
-	// handler.handle(null);
-	// }
 }
