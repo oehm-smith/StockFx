@@ -58,7 +58,6 @@ public class Stock {
 		if (symbol == null) {
 			return "";
 		}
-		System.out.println("Stock.getSymbol() - "+symbol.get());
 		return symbol.get();
 	}
 
@@ -91,7 +90,7 @@ public class Stock {
 		return companyName;
 	}
 
-	@ManyToMany// (fetch=FetchType.EAGER)
+	@ManyToMany(mappedBy = "StocksInThisPortfolio")// (fetch=FetchType.EAGER)
 	public List<Portfolio> getPortfoliosThatContainThisStock() {
 		List<Portfolio> s = new ArrayList<Portfolio>(getobservablePortfoliosThatContainThisStock());
 		return s;

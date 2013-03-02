@@ -1,11 +1,12 @@
 /* Application wide styles */
 
 .label {
-    -fx-font-size: 24px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
+
 
 .button {
     -fx-text-fill: white;
@@ -52,4 +53,70 @@
 
 .body {
     -fx-padding: 20;
+}
+
+#portfolioNameLabelLabel {
+	-fx-text-fill: red;
+	-fx-font-size: 18px;
+}
+
+/* *** From FXExperience tools *** */
+.root {
+    -fx-font-family: "Chalkboard";
+    -fx-font-size: 10.0px;
+    -fx-base: #F1D6D6;
+    -fx-background: #E8E4BC;
+    -fx-focus-color: #0093FF;
+    -fx-control-inner-background: #FFFFFF;
+    -fx-inner-border: linear-gradient(to bottom, derive(-fx-color,63.70724346076459%) 0%, derive(-fx-color,-21.40281690140845%) 100%);
+    -fx-body-color: linear-gradient( to bottom, derive(-fx-color, 20.714285714285722%) 0%, derive(-fx-color, -39.92857142857144%) 100%);
+}
+.button, .toggle-button, .choice-box {
+    -fx-background-radius: 9, 9, 8, 7;
+    -fx-padding: 7px 14px 7px 14px;
+}
+.menu-button {
+    -fx-background-radius: 9, 9, 8, 7;
+}
+.menu-button .label {
+    -fx-padding: 7px 22px 7px 14px;
+}
+.menu-button .arrow-button {
+    -fx-padding: 7px 10px 7px 0px;
+}
+.choice-box {
+    -fx-padding: 0 10px 0 0;
+}
+.choice-box .label {
+    -fx-padding: 7px 8px 7px 10px;
+}
+.choice-box .open-button {
+    -fx-padding: 1 0 0 12px;
+}
+.combo-box-base:editable .text-field, .combo-box-base .arrow-button, .combo-box .list-cell {
+    -fx-padding: 7px 10px 7px 10px;
+}
+.check-box .box {
+    -fx-padding: 0.3269230769230769em;
+}
+.radio-button .radio {
+    -fx-padding: 0.4102560769230769em;
+}
+.label, .check-box, .radio-button {
+    -fx-text-fill: -fx-text-background-color;
+}
+.button, .toggle-button, .check-box .box, .radio-button .radio, .choice-box, .menu-button, .tab, .combo-box-base {
+    -fx-background-insets: 0 0 -1 0, 0, 2, 3;
+}
+.button:focused, .toggle-button:focused, .check-box:focused .box, .radio-button:focused .radio, .choice-box:focused, .menu-button:focused, .combo-box-base:focused {
+    -fx-background-insets: -1.4, 0, 2, 3;
+}
+.combo-box-base .arrow-button {
+    -fx-background-insets: 0, 2, 3;
+}
+.choice-box .label { /* Workaround for RT-20015 */
+    -fx-text-fill: -fx-text-base-color;
+}
+.menu-button .label { /* Workaround for RT-20015 */
+    -fx-text-fill: -fx-text-base-color;
 }

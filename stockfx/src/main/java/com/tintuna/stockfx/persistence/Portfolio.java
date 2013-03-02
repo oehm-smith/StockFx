@@ -88,10 +88,11 @@ public class Portfolio {
 		return type;
 	}
 
-	@ManyToMany(mappedBy = "portfoliosThatContainThisStock") 	// , fetch=FetchType.EAGER)
+	@ManyToMany//(mappedBy = "portfoliosThatContainThisStock") 	// , fetch=FetchType.EAGER)
 	public List<Stock> getStocksInThisPortfolio() {
 		ObservableList<Stock> setOStocks = getobservableStocksInThisPortfolio();
 		List<Stock> s = new ArrayList<Stock>(setOStocks);
+		System.out.println("Portfolio -> getStocksInThisPortfolio: "+s);
 		return s;
 	}
 
@@ -112,12 +113,11 @@ public class Portfolio {
 	public void addStock(Stock s) {
 //		System.out.println("addStock(" + s + ")");
 		getobservableStocksInThisPortfolio().add(s);
-		MainApplication.databaseDebugPrintout();
 	}
 
 	public String toString() {
 		stocksInThisPortfolio.isEmpty(); // Force the Set to Eagerly load
-		return getId() + " = " + getName() + " : " + getType() + " - Stocks=" + stocksInThisPortfolio.size();
+		return getId() + " = " + getName() + " : " + getType() + " - Stocks=" + stocksInThisPortfolio;
 	}
 
 }

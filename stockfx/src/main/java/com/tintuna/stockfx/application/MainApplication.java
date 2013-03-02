@@ -23,12 +23,12 @@ public class MainApplication extends Application {
 	private static final Logger log = LoggerFactory.getLogger(MainApplication.class);
 	private static final String PERSISTENCE_UNIT_NAME = "stockFxPU";
 	private static EntityManagerFactory factory;
-	
-	
+	private static EntityManager em;
+
 	private static AppFactory appFactory = new AppFactory();
 	private static ModelFactory modelFactory = new ModelFactory();
 	private static ServiceFactory serviceFactory = new ServiceFactory();
-	
+
 	public static AppFactory getAppFactory() {
 		return appFactory;
 	}
@@ -36,11 +36,11 @@ public class MainApplication extends Application {
 	public static ModelFactory getModelFactory() {
 		return modelFactory;
 	}
-	
+
 	public static ServiceFactory getServiceFactory() {
 		return serviceFactory;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		launch(args);
 	}
@@ -53,22 +53,28 @@ public class MainApplication extends Application {
 		stage.setTitle("StockFx");
 		stage.setScene(scene);
 		stage.show();
-		
-		appFactory.getTabManager().setTabPane(appFactory.getMainController().getTabPane());
-		
-		appFactory.getTabManager().addNewDocument("Portfolios", appFactory.getPortfolioController().getRoot());
-		appFactory.getTabManager().addNewDocument("one", "");
-		appFactory.getTabManager().addNewDocument("two", "");
-		appFactory.getTabManager().addNewDocument("three", "");
-	}
 
+		appFactory.getTabManager().setTabPane(appFactory.getMainController().getTabPane());
+
+		appFactory.getTabManager().addTabWithNode("Portfolios", appFactory.getPortfolioController().getRoot());
+	}
 
 	private void setDependencies() {
 	}
 
-	public static void databaseDebugPrintout() {
+	public static EntityManager openTransaction() {
 		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 		EntityManager em = factory.createEntityManager();
+		return em;
+	}
+
+	public static void endTransaction(EntityManager localEm) {
+		localEm.getTransaction().commit();
+		localEm.close();
+	}
+
+	public static void databaseDebugPrintout() {
+		EntityManager em = openTransaction();
 		em.getTransaction().begin();
 		// Read the existing entries and write to console
 		Query q = em.createQuery("select t from Portfolio t");
@@ -84,7 +90,6 @@ public class MainApplication extends Application {
 			System.out.println(stock);
 		}
 		System.out.println("Size: " + stockList.size());
-		em.getTransaction().commit();
-		em.close();
+		endTransaction(em);
 	}
 }
