@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.*?>
+
+<fx:root type="javafx.scene.layout.BorderPane" fx:id="root" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml">
+  <bottom>
+    <AnchorPane prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="TOP_LEFT">
+      <children>
+        <Button fx:id="newPortfolioButton" alignment="CENTER_LEFT" mnemonicParsing="false" text="New Portfolio" AnchorPane.leftAnchor="10.0" />
+        <Button fx:id="newStockButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="New / Add Stock" AnchorPane.leftAnchor="100.0" />
+      </children>
+      <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      </padding>
+      <BorderPane.margin>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+      </BorderPane.margin>
+    </AnchorPane>
+  </bottom>
+  <center>
+    <SplitPane dividerPositions="0.44140625" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0">
+      <VBox fx:id="portfolioList" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
+        <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+          <content>
+            <!--  VBox fx:id="portfolioList" / -->
+            <TableView fx:id="portfolioTable" />
+          </content>
+        </ScrollPane>
+      </VBox>
+      <VBox fx:id="stockList" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
+        <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+          <content>
+            <!--  VBox fx:id="portfolioList" / -->
+            <TableView fx:id="stockTable" />
+          </content>
+        </ScrollPane>
+      </VBox>
+    </SplitPane>
+  </center>
+</fx:root>

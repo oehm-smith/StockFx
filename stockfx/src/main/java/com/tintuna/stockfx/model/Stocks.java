@@ -10,12 +10,18 @@ import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.persistence.Portfolio;
 import com.tintuna.stockfx.persistence.Stock;
 
+/**
+ * Model of the Stocks associated with a particular portfolio.
+ * @author bsmith
+ */
 public class Stocks {
 	private ObservableList<Stock> stocks;
 	private Stock selectedStock = null;
+	private Portfolio portfolio;
 
-	public Stocks() {
+	public Stocks(Portfolio portfolio) {
 		stocks = FXCollections.observableArrayList();
+		this.portfolio = portfolio;
 		updateStocksAll();
 	}
 
@@ -24,9 +30,9 @@ public class Stocks {
 	}
 
 	public void updateStocksAll() {
-		List<Stock> portList = MainApplication.getServiceFactory().getStockService().findAll();
+//		List<Stock> stockList = MainApplication.getServiceFactory().getStockService().findAll();
 		stocks.clear();
-		stocks.addAll(portList);
+		stocks.addAll(portfolio.getobservableStocksInThisPortfolio());
 	}
 
 	public ObservableList<Stock> getStocks() {
@@ -49,10 +55,10 @@ public class Stocks {
 		this.selectedStock = selectedStock;
 	}
 
-	public ObservableList<Portfolio> getStocksPortfolios(Stock s) {
-		System.out.println("-> getStocksStocks - they are:"+s.getobservablePortfoliosThatContainThisStock());
-		return s.getobservablePortfoliosThatContainThisStock();
-	}
+//	public ObservableList<Portfolio> getStocksPortfolios(Stock s) {
+//		System.out.println("-> getStocksStocks - they are:"+s.getobservablePortfoliosThatContainThisStock());
+//		return s.getobservablePortfoliosThatContainThisStock();
+//	}
 	
 	public Stock newStock(String symbol, String company) {
 		Stock s = new Stock(symbol, company);

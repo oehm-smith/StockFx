@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -28,6 +31,8 @@ import com.tintuna.stockfx.formatter.StocksComboCellFormatter;
 import com.tintuna.stockfx.persistence.Stock;
 
 public class StockController extends BorderPane implements Initializable {
+	private static final Logger log = LoggerFactory.getLogger(StockController.class);
+
 	private AppFactory controllerFactory;
 	
 	@FXML
@@ -64,6 +69,7 @@ public class StockController extends BorderPane implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		log.debug("initialize");
 		initializePortfolioNameLabel();
 		initializeStockCombo();
 		initializeAddToPortfolioButton();
@@ -72,7 +78,8 @@ public class StockController extends BorderPane implements Initializable {
 	
 
 	private void initializePortfolioNameLabel() {
-		portfolioNameLabel.setText(MainApplication.getModelFactory().getPortfolios().getSelected().getName());		
+//		portfolioNameLabel.setText(MainApplication.getModelFactory().getPortfolios().getSelected().getName());
+		portfolioNameLabel.textProperty().bind(MainApplication.getModelFactory().getPortfolios().getSelectPortfolioNameProperty());
 	}
 
 	private void initializeStockCombo() {
@@ -80,8 +87,7 @@ public class StockController extends BorderPane implements Initializable {
 		stocksCombo.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Stock>() {
 			@Override
 			public void changed(ObservableValue<? extends Stock> arg0, Stock arg1, Stock arg2) {
-				System.out.println("COMBO CHANGED...to:" + arg2.getId() + " = " + arg2.getSymbol());
-				MainApplication.getModelFactory().getStocks().setSelected(stocksCombo.getSelectionModel().getSelectedItem());
+				MainApplication.getModelFactory().getStocks(MainApplication.getModelFactory().getPortfolios().getSelected()).setSelected(stocksCombo.getSelectionModel().getSelectedItem());
 			}
 		});
 		stocksCombo.setCellFactory(new Callback<ListView<Stock>,ListCell<Stock>>() {
@@ -102,11 +108,11 @@ public class StockController extends BorderPane implements Initializable {
 			@SuppressWarnings("rawtypes")
 			@Override
 			public void onChanged(javafx.collections.ListChangeListener.Change c) {
-				stocksCombo.setItems(MainApplication.getModelFactory().getStocks().getStocks());
+				stocksCombo.setItems(MainApplication.getModelFactory().getStocks(MainApplication.getModelFactory().getPortfolios().getSelected()).getStocks());
 			}
 
 		});
-		stocksCombo.setItems(MainApplication.getModelFactory().getStocks().getStocks());
+		stocksCombo.setItems(MainApplication.getModelFactory().getStocks(MainApplication.getModelFactory().getPortfolios().getSelected()).getStocks());
 		stocksCombo.getSelectionModel().selectFirst();
 	}
 
@@ -116,7 +122,7 @@ public class StockController extends BorderPane implements Initializable {
 
 			@Override
 			public void handle(Event arg0) {
-				MainApplication.getModelFactory().getPortfolios().addStockToSelectedPortfolio(MainApplication.getModelFactory().getStocks().getSelected());
+				MainApplication.getModelFactory().getPortfolios().addStockToSelectedPortfolio(MainApplication.getModelFactory().getStocks(MainApplication.getModelFactory().getPortfolios().getSelected()).getSelected());
 				// TODO - should use an enum or something rather than 'portfolios'
 				MainApplication.getAppFactory().getTabManager().selectTab("portfolios");
 			}
@@ -133,10 +139,10 @@ public class StockController extends BorderPane implements Initializable {
 				String symbol = (String) (!(newStockSymbolText == null || newStockSymbolText.getText().isEmpty()) ? newStockSymbolText.getText() : "BBB");
 				String company = (String) (!(newStockCompanyText == null || newStockCompanyText.getText().isEmpty()) ? newStockCompanyText.getText() : "BBB");
 				
-				Stock s = MainApplication.getModelFactory().getStocks().newStock(symbol,company);
+				Stock s = MainApplication.getModelFactory().getStocks(MainApplication.getModelFactory().getPortfolios().getSelected()).newStock(symbol,company);
 				s.addPortfolio(MainApplication.getModelFactory().getPortfolios().getSelected());
 				MainApplication.getModelFactory().getPortfolios().addStockToSelectedPortfolio(s);
-				MainApplication.getModelFactory().getStocks().setSelected(s);
+				MainApplication.getModelFactory().getStocks(MainApplication.getModelFactory().getPortfolios().getSelected()).setSelected(s);
 				MainApplication.getAppFactory().getTabManager().selectTab("portfolios");
 			}
 			

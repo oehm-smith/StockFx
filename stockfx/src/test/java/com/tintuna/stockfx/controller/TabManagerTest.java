@@ -1,6 +1,9 @@
 package com.tintuna.stockfx.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 
@@ -151,7 +154,8 @@ public class TabManagerTest {
 		tabManager.addTabWithNode(tabName4, new BorderPane(), TabManagerParameters.startParams().insertAt(-2));
 		assertEquals(4, tabManager.getTabPane().getTabs().size());
 		// assert first tab is 4
-		assertEquals(new Integer(0), tabManager.getTabNames().get(tabName4));
+//		assertEquals(new Integer(0), tabManager.getTabNames().get(tabName4));
+		assertEquals(new Integer(0), new Integer(tabManager.getIndexOfTabWithName(tabName4)));
 	}
 
 	// using explicit index; and it will insert in the last spot (size()+1)
@@ -168,8 +172,9 @@ public class TabManagerTest {
 		tabManager.addTabWithNode(tabName4, new BorderPane(), TabManagerParameters.startParams().insertAt(91));
 		assertEquals(4, tabManager.getTabPane().getTabs().size());
 		// assert last tab is 4
-		assertEquals(new Integer(3), tabManager.getTabNames().get(tabName4));
-	}
+//		assertEquals(new Integer(3), tabManager.getTabNames().get(tabName4));
+		assertEquals(new Integer(3), new Integer(tabManager.getIndexOfTabWithName(tabName4)));
+			}
 
 	@Test
 	public void testNameCaseInsensitivity() {
@@ -185,5 +190,30 @@ public class TabManagerTest {
 		}
 		assertTrue(haveException);
 		assertEquals(1, tabManager.getTabPane().getTabs().size());
+	}
+
+	// When you have two tabs and insert 1 inbetween (ie. before the 2nd or after the 1st) then the reference by name to
+	// the now 3rd is still correct and to the third and not the 2nd anymore.
+	@Test
+	public void testInsertBeforeExistingTab_ReferenceByNameStillCorrect() {
+		String tabName1 = "tab one";
+		String tabName2 = "tab two";
+		String tabName3 = "tab three";
+		BorderPane borderPane1 = new BorderPane();
+		borderPane1.getChildren().add(new Button(tabName1));
+		BorderPane borderPane2 = new BorderPane();
+		borderPane1.getChildren().add(new Button(tabName2));
+		BorderPane borderPane3 = new BorderPane();
+		borderPane1.getChildren().add(new Button(tabName3));
+		tabManager.addTabWithNode(tabName1, borderPane1);
+		tabManager.addTabWithNode(tabName2, borderPane2);
+		// preliminary confirmation
+		assertEquals(new Integer(0), new Integer(tabManager.getIndexOfTabWithName(tabName1)));
+		assertEquals(new Integer(1), new Integer(tabManager.getIndexOfTabWithName(tabName2)));
+		tabManager.addTabWithNode(tabName3, borderPane3, TabManagerParameters.startParams().insertBefore(tabName2));
+		// now test the tab that was in 2nd place is now in 3rd and the new one is in 2nd place
+		assertEquals(new Integer(1), new Integer(tabManager.getIndexOfTabWithName(tabName3)));
+		assertEquals(new Integer(2), new Integer(tabManager.getIndexOfTabWithName(tabName2)));
+
 	}
 }

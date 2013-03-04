@@ -1,6 +1,8 @@
 package com.tintuna.stockfx.db;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -12,11 +14,24 @@ import javax.persistence.Query;
 public class Crud {
 	// TODO - Get Injection working
 	// @Inject EntityManager em;
+	private static final String urlProperty = "javax.persistence.jdbc.url";
+	private static final String dbLocation = "jdbc:derby:/Users/bsmith/tmp/stockfxDb;create=true";
 	private static final String PERSISTENCE_UNIT_NAME = "stockFxPU";
 	private EntityManager em;
 
 	private void beginTransacgtion() {
-		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		Map<String,String> properties = new HashMap<>();
+		properties.put("javax.persistence.jdbc.driver", "org.apache.derby.jdbc.EmbeddedDriver");
+		properties.put(urlProperty, dbLocation);
+//		properties.put("javax.persistence.jdbc.url", "jdbc:derby:/Users/bsmith/tmp/stockfxDb;create=true");
+		properties.put("javax.persistence.jdbc.user", "test");
+		properties.put("javax.persistence.jdbc.password", "test");
+
+		properties.put("eclipselink.ddl-generation", "create-tables");
+		properties.put("eclipselink.create-ddl-jdbc-file-name", "createDDL_ddlGeneration.jdbc");
+		properties.put("eclipselink.drop-ddl-jdbc-file-name", "dropDDL_ddlGeneration.jdbc");
+		properties.put("eclipselink.ddl-generation.output-mode", "both");
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
 		em = factory.createEntityManager();
 		em.getTransaction().begin();
 	}
