@@ -20,25 +20,24 @@ import com.tintuna.stockfx.persistence.Portfolio;
 public class PortfolioAssociatedStocks {
 	private static final Logger log = LoggerFactory.getLogger(PortfolioAssociatedStocks.class);
 
-	private static Map<String, Stocks> portfolioStocks = new HashMap<>();
+	private static Map<String, StocksModel> portfolioStocks = new HashMap<>();
 
-	public static Map<String, Stocks> getPortfolioStocks() {
+	public static Map<String, StocksModel> getPortfolioStocks() {
 		return portfolioStocks;
 	}
 
-	public static void setPortfolioStocks(Map<String, Stocks> passedPortfolioStocks) {
+	public static void setPortfolioStocks(Map<String, StocksModel> passedPortfolioStocks) {
 		portfolioStocks = passedPortfolioStocks;
 	}
 
 	// TODO - this will probably fail when stock are added to portfolio in some other way
-	public static Stocks getStockModelForAssociatedPortfolio(Portfolio portfolio) {
-		log.debug("LOOKUP Stocks model for portfolio: "+portfolio.getName());
+	public static StocksModel getStockModelForAssociatedPortfolio(Portfolio portfolio) {
 		if (portfolioStocks.containsKey(portfolio.getName().toLowerCase())) {
 			log.debug("Return Stocks model for existing mapped portfolio: "+portfolio.getName());
 			return portfolioStocks.get(portfolio.getName().toLowerCase());
 		} else {
 			log.debug("Return NEW Stocks model for new mapped portfolio: "+portfolio.getName());
-			Stocks s = new Stocks(portfolio);
+			StocksModel s = new StocksModel(portfolio);
 			portfolioStocks.put(portfolio.getName().toLowerCase(), s);
 			return s;
 		}

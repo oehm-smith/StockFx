@@ -2,12 +2,10 @@ package com.tintuna.stockfx.controller;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -31,7 +30,7 @@ import com.tintuna.stockfx.persistence.Portfolio;
 import com.tintuna.stockfx.persistence.Stock;
 import com.tintuna.stockfx.util.TabManagerParameters;
 
-public class PortfoliosController extends BorderPane implements Initializable {
+public class PortfoliosController extends BorderPane implements Initializable, Controller {
 	private AppFactory appFactory;
 	@FXML
 	private Parent root;
@@ -50,6 +49,8 @@ public class PortfoliosController extends BorderPane implements Initializable {
 	private Button newPortfolioButton;
 	@FXML
 	private Button newStockButton;
+	@FXML
+	private Label messageBox;
 
 	public PortfoliosController(AppFactory controllerFactory) {
 		this.appFactory = controllerFactory;
@@ -120,7 +121,7 @@ public class PortfoliosController extends BorderPane implements Initializable {
 			@Override
 			public void changed(ObservableValue<? extends Portfolio> arg0, Portfolio arg1, Portfolio arg2) {
 				if (arg2 != null && arg2 instanceof Portfolio) {
-					MainApplication.getModelFactory().getPortfolios().setSelected(arg2);
+					MainApplication.getModelFactory().getPortfoliosModel().setSelected(arg2);
 					newStockButton.setDisable(false);
 					setStockItems();
 				}
@@ -130,16 +131,16 @@ public class PortfoliosController extends BorderPane implements Initializable {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void initializePortfolioTableData() {
-		MainApplication.getModelFactory().getPortfolios().addPortfoliosListener(new ListChangeListener() {
+		MainApplication.getModelFactory().getPortfoliosModel().addPortfoliosListener(new ListChangeListener() {
 
 			@SuppressWarnings("rawtypes")
 			@Override
 			public void onChanged(javafx.collections.ListChangeListener.Change c) {
-				portfolioTable.setItems(MainApplication.getModelFactory().getPortfolios().getPortfolios());
+				portfolioTable.setItems(MainApplication.getModelFactory().getPortfoliosModel().getPortfolios());
 			}
 
 		});
-		portfolioTable.setItems(MainApplication.getModelFactory().getPortfolios().getPortfolios());
+		portfolioTable.setItems(MainApplication.getModelFactory().getPortfoliosModel().getPortfolios());
 	}
 
 	private void initializeStockTable() {
@@ -164,7 +165,7 @@ public class PortfoliosController extends BorderPane implements Initializable {
 				}
 				if (arg2 != null && arg2 instanceof Stock) {
 					MainApplication.getModelFactory()
-							.getStocks(MainApplication.getModelFactory().getPortfolios().getSelected())
+							.getStocksModel(MainApplication.getModelFactory().getPortfoliosModel().getSelected())
 							.setSelected(arg2);
 				}
 			}
@@ -173,7 +174,7 @@ public class PortfoliosController extends BorderPane implements Initializable {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void initializeStockTableData() {
-		MainApplication.getModelFactory().getPortfolios().addPortfoliosListener(new ListChangeListener() {
+		MainApplication.getModelFactory().getPortfoliosModel().addPortfoliosListener(new ListChangeListener() {
 
 			@SuppressWarnings("rawtypes")
 			@Override
@@ -186,8 +187,9 @@ public class PortfoliosController extends BorderPane implements Initializable {
 	}
 
 	private void setStockItems() {
-		if (MainApplication.getModelFactory().getPortfolios().getSelected() != null) {
-			stockTable.setItems(MainApplication.getModelFactory().getPortfolios().getPortfoliosStocksForSelected());
+		if (MainApplication.getModelFactory().getPortfoliosModel().getSelected() != null) {
+			stockTable
+					.setItems(MainApplication.getModelFactory().getPortfoliosModel().getPortfoliosStocksForSelected());
 		}
 	}
 
@@ -202,7 +204,7 @@ public class PortfoliosController extends BorderPane implements Initializable {
 
 	protected void newPortfolio() {
 		appFactory.getTabManager().addTabWithNode(TabStandardNames.Portfolio.name(),
-				appFactory.getPortfolioController().getRoot(),
+				appFactory.getPortfolioController(),
 				TabManagerParameters.startParams().insertAfter(TabStandardNames.Portfolios.name()).openNotAdd(true));
 	}
 
@@ -216,14 +218,7 @@ public class PortfoliosController extends BorderPane implements Initializable {
 	}
 
 	protected void newStockForPortfolio() {
-		appFactory.getTabManager().addTabWithNode(TabStandardNames.Stock.name(), appFactory.getStockController().getRoot(),
+		appFactory.getTabManager().addTabWithNode(TabStandardNames.Stock.name(), appFactory.getStockController(),
 				TabManagerParameters.startParams().insertAfter(TabStandardNames.Portfolios.name()).openNotAdd(true));
-		// // Insert dummy test data
-		// Integer a = (int) (Math.random() * 1000);
-		// Stock s = new Stock(a.toString(), "Random Bank");
-		// s.addPortfolio(selected);
-		// MainApplication.getServiceFactory().getStockService().create(s);
-		//
-		// selected.addStock(s);
 	}
 }

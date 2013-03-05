@@ -33,6 +33,12 @@
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
+#message {
+	  -fx-font-size: 14px;
+		-fx-text-fill: red;
+		-fx-font-weight: bold;
+}
+
 /* *** */
 .header {
     -fx-padding: 20;

@@ -22,8 +22,8 @@ public class MainApplication extends Application {
 
 	private static final Logger log = LoggerFactory.getLogger(MainApplication.class);
 	private static final String PERSISTENCE_UNIT_NAME = "stockFxPU";
-//	private static EntityManagerFactory factory;
-//	private static EntityManager em;
+	// private static EntityManagerFactory factory;
+	// private static EntityManager em;
 
 	private static AppFactory appFactory = new AppFactory();
 	private static ModelFactory modelFactory = new ModelFactory();
@@ -46,7 +46,6 @@ public class MainApplication extends Application {
 	}
 
 	public void start(Stage stage) throws Exception {
-		databaseDebugPrintout();
 		setDependencies();
 		Scene scene = new Scene(appFactory.getMainController().getRoot(), 1000, 700);
 		scene.getStylesheets().add("/styles/styles.css");
@@ -56,40 +55,48 @@ public class MainApplication extends Application {
 
 		appFactory.getTabManager().setTabPane(appFactory.getMainController().getTabPane());
 
-		appFactory.getTabManager().addTabWithNode(TabStandardNames.Portfolios.name(), appFactory.getPortfoliosController().getRoot());
+		databaseDebugPrintout();
+		if (getAppFactory().getCrudService().isDatabaseReady()) {
+			appFactory.getTabManager().addTabWithNode(TabStandardNames.Portfolios.name(), appFactory.getPortfoliosController());
+		}
+		// else the only tab open will be the preferences one not allowing users to go any 'deeper'
 	}
 
 	private void setDependencies() {
 	}
 
-//	public static EntityManager openTransaction() {
-//		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-//		EntityManager em = factory.createEntityManager();
-//		return em;
-//	}
+	public static void setMessage(String msg) {
+		getAppFactory().getMainController().setMessage(msg);
+	}
 
-//	public static void endTransaction(EntityManager localEm) {
-//		localEm.getTransaction().commit();
-//		localEm.close();
-//	}
+	// public static EntityManager openTransaction() {
+	// factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+	// EntityManager em = factory.createEntityManager();
+	// return em;
+	// }
+
+	// public static void endTransaction(EntityManager localEm) {
+	// localEm.getTransaction().commit();
+	// localEm.close();
+	// }
 
 	public static void databaseDebugPrintout() {
-//		EntityManager em = openTransaction();
-//		em.getTransaction().begin();
+		// EntityManager em = openTransaction();
+		// em.getTransaction().begin();
 		// Read the existing entries and write to console
-//		Query q = em.createQuery("select t from Portfolio t");
+		// Query q = em.createQuery("select t from Portfolio t");
 		List<Portfolio> portfolioList = getServiceFactory().getPortfolioService().findAll();
 		for (Portfolio todo : portfolioList) {
 			System.out.println(todo);
 		}
 		System.out.println("Size: " + portfolioList.size());
 
-//		Query q2 = em.createQuery("select s from Stock s");
+		// Query q2 = em.createQuery("select s from Stock s");
 		List<Stock> stockList = getServiceFactory().getStockService().findAll();
 		for (Stock stock : stockList) {
 			System.out.println(stock);
 		}
 		System.out.println("Size: " + stockList.size());
-//		endTransaction(em);
+		// endTransaction(em);
 	}
 }

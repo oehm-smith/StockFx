@@ -2,6 +2,9 @@ package com.tintuna.stockfx.model;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -12,12 +15,22 @@ import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.persistence.Portfolio;
 import com.tintuna.stockfx.persistence.Stock;
 
-public class Portfolios {
+public class PortfoliosModel {
+	private static final Logger log = LoggerFactory.getLogger(PortfoliosModel.class);
+	private static PortfoliosModel portfoliosInstanece = null;
+
 	private ObservableList<Portfolio> portfolios;
 	private Portfolio selected = null;
 	private StringProperty selectPortfolioNameProperty;
 
-	public Portfolios() {
+	public static PortfoliosModel instance() {
+		if (portfoliosInstanece == null) {
+			portfoliosInstanece = new PortfoliosModel();
+		}
+		return portfoliosInstanece;
+	}
+
+	private PortfoliosModel() {
 		portfolios = FXCollections.observableArrayList();
 		updatePortfoliosAll();
 	}
@@ -59,7 +72,7 @@ public class Portfolios {
 		}
 		return selectPortfolioNameProperty;
 	}
-	
+
 	public void setSelectPortfolioNameProperty(StringProperty selectPortfolioNameProperty) {
 		this.selectPortfolioNameProperty = selectPortfolioNameProperty;
 	}
@@ -67,7 +80,7 @@ public class Portfolios {
 	public void setSelectPortfolioNamePropertyText(String text) {
 		getSelectPortfolioNameProperty().set(text);
 	}
-	
+
 	public ObservableList<Stock> getPortfoliosStocks(Portfolio p) {
 		System.out.println("-> getPortfoliosStocks - they are:" + p.getobservableStocksInThisPortfolio());
 		return p.getobservableStocksInThisPortfolio();
@@ -92,6 +105,7 @@ public class Portfolios {
 		if (getSelected() != null) {
 			// EntityManager em = MainApplication.openTransaction();
 			// em.getTransaction().begin();
+			log.debug("Stock:" + stock);
 			getSelected().addStock(stock);
 			MainApplication.getAppFactory().getCrudService().update(getSelected());
 			MainApplication.databaseDebugPrintout();

@@ -26,17 +26,17 @@ public class TabManagerTest {
 	@Test(expected = StockFxException.class)
 	public void uniqueNameException() {
 		String tabName = "same name";
-		tabManager.addTabWithNode(tabName, new BorderPane());
-		tabManager.addTabWithNode(tabName, new BorderPane());
-		assertEquals(5, tabManager.getTabPane().getTabs().size());
+		tabManager.addTabWithNode(tabName, new DummyController());
+		tabManager.addTabWithNode(tabName, new DummyController());
+//		assertEquals(5, tabManager.getTabPane().getTabs().size());
 	}
 
 	@Test
 	public void uniqueNameExceptionCatchException() {
 		String tabName = "same name";
-		tabManager.addTabWithNode(tabName, new BorderPane());
+		tabManager.addTabWithNode(tabName, new DummyController());
 		try {
-			tabManager.addTabWithNode(tabName, new BorderPane());
+			tabManager.addTabWithNode(tabName, new DummyController());
 		} catch (StockFxException e) {
 			// ignore
 		}
@@ -46,8 +46,8 @@ public class TabManagerTest {
 	@Test
 	public void uniqueNameUseSuffix() {
 		String tabName = "same name";
-		tabManager.addTabWithNode(tabName, new BorderPane());
-		tabManager.addTabWithNode(tabName, new BorderPane(), TabManagerParameters.startParams().useSuffix(true));
+		tabManager.addTabWithNode(tabName, new DummyController());
+		tabManager.addTabWithNode(tabName, new DummyController(), TabManagerParameters.startParams().useSuffix(true));
 		assertEquals(2, tabManager.getTabPane().getTabs().size());
 		assertNotSame("tab names shouldn't be same name.", tabManager.getTabPane().getTabs().get(0), tabManager
 				.getTabPane().getTabs().get(1));
@@ -57,8 +57,8 @@ public class TabManagerTest {
 	public void uniqueNameDontUseSuffix() {
 		String tabName = "one name";
 		String tabName2 = "two name";
-		tabManager.addTabWithNode(tabName, new BorderPane());
-		tabManager.addTabWithNode(tabName2, new BorderPane(), TabManagerParameters.startParams().useSuffix(true));
+		tabManager.addTabWithNode(tabName, new DummyController());
+		tabManager.addTabWithNode(tabName2, new DummyController(), TabManagerParameters.startParams().useSuffix(true));
 		assertEquals(2, tabManager.getTabPane().getTabs().size());
 		assertNotSame("tab names shouldn't be same name.", tabManager.getTabPane().getTabs().get(0), tabManager
 				.getTabPane().getTabs().get(1));
@@ -75,8 +75,8 @@ public class TabManagerTest {
 	public void insertTabAtEndExplicitly() {
 		String tabName = "one name";
 		String tabName2 = "two name";
-		tabManager.addTabWithNode(tabName, new BorderPane());
-		tabManager.addTabWithNode(tabName2, new BorderPane(), TabManagerParameters.startParams().insertAtEnd());
+		tabManager.addTabWithNode(tabName, new DummyController());
+		tabManager.addTabWithNode(tabName2, new DummyController(), TabManagerParameters.startParams().insertAtEnd());
 		assertEquals(2, tabManager.getTabPane().getTabs().size());
 		assertNotSame("tab names shouldn't be same name.", tabManager.getTabPane().getTabs().get(0), tabManager
 				.getTabPane().getTabs().get(1));
@@ -89,11 +89,11 @@ public class TabManagerTest {
 		String tabName2 = "tab 2";
 		String tabName3 = "tab 3";
 		String tabName4 = "tab 4";
-		tabManager.addTabWithNode(tabName1, new BorderPane());
-		tabManager.addTabWithNode(tabName2, new BorderPane());
-		tabManager.addTabWithNode(tabName3, new BorderPane());
+		tabManager.addTabWithNode(tabName1, new DummyController());
+		tabManager.addTabWithNode(tabName2, new DummyController());
+		tabManager.addTabWithNode(tabName3, new DummyController());
 		tabManager
-				.addTabWithNode(tabName4, new BorderPane(), TabManagerParameters.startParams().insertBefore(tabName1));
+				.addTabWithNode(tabName4, new DummyController(), TabManagerParameters.startParams().insertBefore(tabName1));
 		assertEquals(4, tabManager.getTabPane().getTabs().size());
 	}
 
@@ -104,10 +104,10 @@ public class TabManagerTest {
 		String tabName2 = "tab 2";
 		String tabName3 = "tab 3";
 		String tabName4 = "tab 4";
-		tabManager.addTabWithNode(tabName1, new BorderPane());
-		tabManager.addTabWithNode(tabName2, new BorderPane());
-		tabManager.addTabWithNode(tabName3, new BorderPane());
-		tabManager.addTabWithNode(tabName4, new BorderPane(), TabManagerParameters.startParams().insertAfter(tabName1));
+		tabManager.addTabWithNode(tabName1, new DummyController());
+		tabManager.addTabWithNode(tabName2, new DummyController());
+		tabManager.addTabWithNode(tabName3, new DummyController());
+		tabManager.addTabWithNode(tabName4, new DummyController(), TabManagerParameters.startParams().insertAfter(tabName1));
 		assertEquals(4, tabManager.getTabPane().getTabs().size());
 	}
 
@@ -118,11 +118,11 @@ public class TabManagerTest {
 		String tabName2 = "tab 2";
 		String tabName3 = "tab 3";
 		String tabName4 = "tab 4";
-		tabManager.addTabWithNode(tabName1, new BorderPane());
-		tabManager.addTabWithNode(tabName2, new BorderPane());
-		tabManager.addTabWithNode(tabName3, new BorderPane());
+		tabManager.addTabWithNode(tabName1, new DummyController());
+		tabManager.addTabWithNode(tabName2, new DummyController());
+		tabManager.addTabWithNode(tabName3, new DummyController());
 		tabManager
-				.addTabWithNode(tabName4, new BorderPane(), TabManagerParameters.startParams().insertBefore(tabName3));
+				.addTabWithNode(tabName4, new DummyController(), TabManagerParameters.startParams().insertBefore(tabName3));
 		assertEquals(4, tabManager.getTabPane().getTabs().size());
 	}
 
@@ -133,10 +133,10 @@ public class TabManagerTest {
 		String tabName2 = "tab 2";
 		String tabName3 = "tab 3";
 		String tabName4 = "tab 4";
-		tabManager.addTabWithNode(tabName1, new BorderPane());
-		tabManager.addTabWithNode(tabName2, new BorderPane());
-		tabManager.addTabWithNode(tabName3, new BorderPane());
-		tabManager.addTabWithNode(tabName4, new BorderPane(), TabManagerParameters.startParams().insertAfter(tabName3));
+		tabManager.addTabWithNode(tabName1, new DummyController());
+		tabManager.addTabWithNode(tabName2, new DummyController());
+		tabManager.addTabWithNode(tabName3, new DummyController());
+		tabManager.addTabWithNode(tabName4, new DummyController(), TabManagerParameters.startParams().insertAfter(tabName3));
 		assertEquals(4, tabManager.getTabPane().getTabs().size());
 	}
 
@@ -148,10 +148,10 @@ public class TabManagerTest {
 		String tabName2 = "tab 2";
 		String tabName3 = "tab 3";
 		String tabName4 = "tab 4";
-		tabManager.addTabWithNode(tabName1, new BorderPane());
-		tabManager.addTabWithNode(tabName2, new BorderPane());
-		tabManager.addTabWithNode(tabName3, new BorderPane());
-		tabManager.addTabWithNode(tabName4, new BorderPane(), TabManagerParameters.startParams().insertAt(-2));
+		tabManager.addTabWithNode(tabName1, new DummyController());
+		tabManager.addTabWithNode(tabName2, new DummyController());
+		tabManager.addTabWithNode(tabName3, new DummyController());
+		tabManager.addTabWithNode(tabName4, new DummyController(), TabManagerParameters.startParams().insertAt(-2));
 		assertEquals(4, tabManager.getTabPane().getTabs().size());
 		// assert first tab is 4
 //		assertEquals(new Integer(0), tabManager.getTabNames().get(tabName4));
@@ -166,10 +166,10 @@ public class TabManagerTest {
 		String tabName2 = "tab 2";
 		String tabName3 = "tab 3";
 		String tabName4 = "tab 4";
-		tabManager.addTabWithNode(tabName1, new BorderPane());
-		tabManager.addTabWithNode(tabName2, new BorderPane());
-		tabManager.addTabWithNode(tabName3, new BorderPane());
-		tabManager.addTabWithNode(tabName4, new BorderPane(), TabManagerParameters.startParams().insertAt(91));
+		tabManager.addTabWithNode(tabName1, new DummyController());
+		tabManager.addTabWithNode(tabName2, new DummyController());
+		tabManager.addTabWithNode(tabName3, new DummyController());
+		tabManager.addTabWithNode(tabName4, new DummyController(), TabManagerParameters.startParams().insertAt(91));
 		assertEquals(4, tabManager.getTabPane().getTabs().size());
 		// assert last tab is 4
 //		assertEquals(new Integer(3), tabManager.getTabNames().get(tabName4));
@@ -181,9 +181,9 @@ public class TabManagerTest {
 		String tabName1 = "tab one";
 		String tabName1MC = "tAb oNe";
 		boolean haveException = false;
-		tabManager.addTabWithNode(tabName1, new BorderPane());
+		tabManager.addTabWithNode(tabName1, new DummyController());
 		try {
-			tabManager.addTabWithNode(tabName1MC, new BorderPane());
+			tabManager.addTabWithNode(tabName1MC, new DummyController());
 		} catch (StockFxException e) {
 			haveException = true;
 			// ignore otherwise
@@ -199,12 +199,12 @@ public class TabManagerTest {
 		String tabName1 = "tab one";
 		String tabName2 = "tab two";
 		String tabName3 = "tab three";
-		BorderPane borderPane1 = new BorderPane();
-		borderPane1.getChildren().add(new Button(tabName1));
-		BorderPane borderPane2 = new BorderPane();
-		borderPane1.getChildren().add(new Button(tabName2));
-		BorderPane borderPane3 = new BorderPane();
-		borderPane1.getChildren().add(new Button(tabName3));
+		DummyController borderPane1 = new DummyController();
+		((BorderPane)borderPane1.getRoot()).getChildren().add(new Button(tabName1));
+		DummyController borderPane2 = new DummyController();
+		((BorderPane)borderPane1.getRoot()).getChildren().add(new Button(tabName2));
+		DummyController borderPane3 = new DummyController();
+		((BorderPane)borderPane1.getRoot()).getChildren().add(new Button(tabName3));
 		tabManager.addTabWithNode(tabName1, borderPane1);
 		tabManager.addTabWithNode(tabName2, borderPane2);
 		// preliminary confirmation

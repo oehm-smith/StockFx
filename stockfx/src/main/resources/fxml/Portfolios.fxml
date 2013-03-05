@@ -7,12 +7,13 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.*?>
 
-<fx:root type="javafx.scene.layout.BorderPane" fx:id="root" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml">
+<fx:root type="javafx.scene.layout.BorderPane" fx:id="root" prefHeight="-1.0" prefWidth="453.0" xmlns:fx="http://javafx.com/fxml">
   <bottom>
     <AnchorPane prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="TOP_LEFT">
       <children>
         <Button fx:id="newPortfolioButton" alignment="CENTER_LEFT" mnemonicParsing="false" text="New Portfolio" AnchorPane.leftAnchor="10.0" />
         <Button fx:id="newStockButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="New / Add Stock" AnchorPane.leftAnchor="100.0" />
+        <Button id="PrefsButton" fx:id="prefsButton" layoutY="0.0" mnemonicParsing="false" text="Preferences" AnchorPane.leftAnchor="256.0" />
       </children>
       <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -23,7 +24,7 @@
     </AnchorPane>
   </bottom>
   <center>
-    <SplitPane dividerPositions="0.44140625" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0">
+    <SplitPane dividerPositions="0.4656319290465632" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0">
       <VBox fx:id="portfolioList" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
         <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
           <content>

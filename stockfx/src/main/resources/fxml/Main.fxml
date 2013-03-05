@@ -8,33 +8,29 @@
 <?import javafx.scene.layout.BorderPane?>
 
 <fx:root type="javafx.scene.layout.BorderPane" fx:id="root" prefHeight="-1.0" prefWidth="-1.0" xmlns:fx="http://javafx.com/fxml">
-	<!-- fx:controller="com.tintuna.stockfx.controller.Application" -->
-	<!-- Header -->
-	<top>
-		<VBox spacing="5">
-			<styleClass>
-				<String fx:value="header" />
-			</styleClass>
-			<children>
-				<Label text="StockFx">
-					<styleClass>
-						<String fx:value="label" />
-						<!-- String fx:value="title"/ -->
-					</styleClass>
-				</Label>
-				<Label text="Advanced stock portfolio manager">
-					<styleClass>
-						<!-- String fx:value="label "/ -->
-						<String fx:value="tagline" />
-					</styleClass>
-				</Label>
-			</children>
-		</VBox>
-	</top>
-
-	<!-- Content Area -->
-	<center>
-		<TabPane fx:id="tabPane">
-		</TabPane>
-	</center>
+  <bottom>
+    <Button fx:id="preferencesButton" mnemonicParsing="false" text="Preferences" />
+  </bottom>
+  <center>
+    <TabPane fx:id="tabPane" />
+  </center>
+  <top>
+    <VBox prefHeight="-1.0" prefWidth="336.0" spacing="5.0" styleClass="header">
+      <children>
+        <Label text="StockFx">
+          <styleClass>
+            <String fx:value="label" />
+            <!-- String fx:value="title"/ -->
+          </styleClass>
+        </Label>
+        <Label text="Advanced stock portfolio manager">
+          <styleClass>
+            <!-- String fx:value="label "/ -->
+            <String fx:value="tagline" />
+          </styleClass>
+        </Label>
+        <Label fx:id="messageBox" id="message" text="" />
+      </children>
+    </VBox>
+  </top>
 </fx:root>

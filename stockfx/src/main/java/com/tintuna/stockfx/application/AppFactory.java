@@ -3,6 +3,7 @@ package com.tintuna.stockfx.application;
 import com.tintuna.stockfx.controller.MainController;
 import com.tintuna.stockfx.controller.PortfolioController;
 import com.tintuna.stockfx.controller.PortfoliosController;
+import com.tintuna.stockfx.controller.PreferencesController;
 import com.tintuna.stockfx.controller.StockController;
 import com.tintuna.stockfx.controller.TabManager;
 import com.tintuna.stockfx.db.Crud;
@@ -14,6 +15,7 @@ public class AppFactory {
 	private StockController stockController;
 	private Crud crudService;
 	private PortfolioController portfolioController;
+	private PreferencesController prefsController;
 
 	public MainController getMainController() {
 		if (mainController == null) {
@@ -44,8 +46,15 @@ public class AppFactory {
 	}
 
 	public StockController getStockController() {
-		stockController = new StockController(this); // even if one already exists - start new one each time
+		stockController = new StockController(); // even if one already exists - start new one each time
 		return stockController;
+	}
+	
+	public PreferencesController getPrefsController() {
+		if (prefsController == null) {
+			prefsController = new PreferencesController();
+		}
+		return prefsController;
 	}
 
 	public Crud getCrudService() {

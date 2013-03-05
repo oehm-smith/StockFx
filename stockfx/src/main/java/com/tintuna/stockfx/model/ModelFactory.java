@@ -3,17 +3,18 @@ package com.tintuna.stockfx.model;
 import com.tintuna.stockfx.persistence.Portfolio;
 
 public class ModelFactory {
-	private Portfolios portfolios;
-	private Stocks stocks;
+	private PortfoliosModel portfolios;
+	private StocksModel stocks;
 
-	public Portfolios getPortfolios() {
-		if (portfolios == null) {
-			portfolios = new Portfolios();
-		}
-		return portfolios;
+	public PortfoliosModel getPortfoliosModel() {
+		return PortfoliosModel.instance();
 	}
 
-	public Stocks getStocks(Portfolio portfolio) {
+	public StocksModel getStocksModel(Portfolio portfolio) {
 		return PortfolioAssociatedStocks.getStockModelForAssociatedPortfolio(portfolio);
+	}
+	
+	public StockFxPreferences getStockFxPreferences() {
+		return StockFxPreferences.instance();
 	}
 }

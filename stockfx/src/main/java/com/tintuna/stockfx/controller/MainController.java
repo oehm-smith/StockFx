@@ -4,16 +4,23 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.tintuna.stockfx.application.AppFactory;
-
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+
+import com.tintuna.stockfx.application.AppFactory;
+import com.tintuna.stockfx.application.MainApplication;
+import com.tintuna.stockfx.application.TabStandardNames;
+import com.tintuna.stockfx.util.TabManagerParameters;
 
 public class MainController extends BorderPane implements Initializable {
 	private AppFactory controllerFactory;
@@ -25,9 +32,13 @@ public class MainController extends BorderPane implements Initializable {
 	private GridPane gridPane;
 	@FXML
 	private TabPane tabPane;
+	@FXML
+	private Button preferencesButton;
+	@FXML
+	private Label messageBox;
 
 	public MainController(AppFactory controllerFactory) {
-		this.controllerFactory=controllerFactory;
+		this.controllerFactory = controllerFactory;
 		FXMLLoader loader = null;
 		try {
 			loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"));
@@ -69,7 +80,27 @@ public class MainController extends BorderPane implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		System.out.println("mainController - init: location:" + location + ", resources:" + resources);
+		initializePrefsButton();
 	}
 
+	private void initializePrefsButton() {
+		preferencesButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				openPreferences();
+			}
+		});
+		preferencesButton.setDisable(false);
+	}
+
+	protected void openPreferences() {
+		MainApplication
+				.getAppFactory()
+				.getTabManager()
+				.addTabWithNode(TabStandardNames.Prefs.name(), MainApplication.getAppFactory().getPrefsController(),
+						TabManagerParameters.startParams().insertAt(0).openNotAdd(true));
+	}
+
+	public void setMessage(String msg) {
+		messageBox.setText(msg);
+	}
 }

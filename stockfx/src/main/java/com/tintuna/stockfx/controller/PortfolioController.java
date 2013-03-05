@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -14,20 +11,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.util.Callback;
 
 import com.tintuna.stockfx.application.AppFactory;
 import com.tintuna.stockfx.application.MainApplication;
-import com.tintuna.stockfx.formatter.StocksComboCellFormatter;
-import com.tintuna.stockfx.persistence.Stock;
+import com.tintuna.stockfx.util.StringUtils;
 
-public class PortfolioController extends BorderPane implements Initializable {
+public class PortfolioController extends BorderPane implements Initializable, Controller {
 	private AppFactory controllerFactory;
 
 	@FXML
@@ -67,8 +58,8 @@ public class PortfolioController extends BorderPane implements Initializable {
 
 			@Override
 			public void handle(Event arg0) {
-				if (isNotNullEmpty(newPortfolioText) && isNotNullEmpty(newTypeText)) {
-					MainApplication.getModelFactory().getPortfolios()
+				if (StringUtils.isNotNullEmpty(newPortfolioText) && StringUtils.isNotNullEmpty(newTypeText)) {
+					MainApplication.getModelFactory().getPortfoliosModel()
 							.newPortfolio(newPortfolioText.getText(), newTypeText.getText());
 					// TODO - should use an enum or something rather than 'portfolios'
 					MainApplication.getAppFactory().getTabManager().selectTab("portfolios");
@@ -76,9 +67,5 @@ public class PortfolioController extends BorderPane implements Initializable {
 			}
 
 		});
-	}
-
-	private boolean isNotNullEmpty(TextField strField) {
-		return (!(strField == null || strField.getText().isEmpty()));
 	}
 }

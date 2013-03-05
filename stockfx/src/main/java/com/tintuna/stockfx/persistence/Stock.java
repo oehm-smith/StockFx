@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 		@NamedQuery(name = "Stock.findByCompanyName",
 				query = "SELECT s FROM Stock s WHERE s.companyName = :companyName") })
 @XmlRootElement
-public class Stock {
+public class Stock implements Comparable {
 	private long id;
 
 	private StringProperty symbol;
@@ -90,8 +90,10 @@ public class Stock {
 		return companyName;
 	}
 
-	@ManyToMany(mappedBy = "StocksInThisPortfolio")// (fetch=FetchType.EAGER)
-	public List<Portfolio> getPortfoliosThatContainThisStock() {
+	@ManyToMany(mappedBy = "StocksInThisPortfolio")
+	// (fetch=FetchType.EAGER)
+			public
+			List<Portfolio> getPortfoliosThatContainThisStock() {
 		List<Portfolio> s = new ArrayList<Portfolio>(getobservablePortfoliosThatContainThisStock());
 		return s;
 	}
@@ -114,9 +116,40 @@ public class Stock {
 		getobservablePortfoliosThatContainThisStock().add(p);
 	}
 
+	/* ******************** */
+	public boolean equals(Object obj) {
+		if (obj instanceof Stock) {
+			Stock s = (Stock) obj;
+			return (s.getSymbol().equals(this.getSymbol())) && s.getCompanyName().equals(this.getCompanyName());
+		} else {
+			return false;
+		}
+	}
+
+	public int hashCode() {
+		return (getSymbol() + getCompanyName()).hashCode();
+	}
+
+	@Override
+	public int compareTo(Object obj) {
+		if (obj instanceof Stock) {
+			Stock s = (Stock) obj;
+			return ((s.getSymbol() + s.getCompanyName()).compareTo((this.getSymbol() + this.getCompanyName())));
+		} else {
+			return -1;
+		}
+	}
+
+	@Override
 	public String toString() {
+		portfoliosThatContainThisStock.isEmpty(); // Force the Set to Eagerly load
+		return getId() + " = " + getSymbol() + " : " + getCompanyName();
+	}
+
+	public String toStringWithPortfolio() {
 		portfoliosThatContainThisStock.isEmpty(); // Force the Set to Eagerly load
 		return getId() + " = " + getSymbol() + " : " + getCompanyName() + " - Portfolios="
 				+ portfoliosThatContainThisStock.size();
 	}
+
 }

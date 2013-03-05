@@ -18,6 +18,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.tintuna.stockfx.application.MainApplication;
 
 @Entity
@@ -27,6 +30,7 @@ import com.tintuna.stockfx.application.MainApplication;
 		@NamedQuery(name = "Portfolio.findByType", query = "SELECT p FROM Portfolio p WHERE p.name = :type") })
 @XmlRootElement
 public class Portfolio {
+	private static final Logger log = LoggerFactory.getLogger(MainApplication.class);
 	private long id;
 
 	private StringProperty name;
@@ -88,11 +92,13 @@ public class Portfolio {
 		return type;
 	}
 
-	@ManyToMany//(mappedBy = "portfoliosThatContainThisStock") 	// , fetch=FetchType.EAGER)
-	public List<Stock> getStocksInThisPortfolio() {
+	@ManyToMany
+	// (mappedBy = "portfoliosThatContainThisStock") // , fetch=FetchType.EAGER)
+			public
+			List<Stock> getStocksInThisPortfolio() {
 		ObservableList<Stock> setOStocks = getobservableStocksInThisPortfolio();
 		List<Stock> s = new ArrayList<Stock>(setOStocks);
-		System.out.println("Portfolio -> getStocksInThisPortfolio: "+s);
+		log.debug("Portfolio -> getStocksInThisPortfolio "+getName()+": " + s);
 		return s;
 	}
 
@@ -111,13 +117,18 @@ public class Portfolio {
 	}
 
 	public void addStock(Stock s) {
-//		System.out.println("addStock(" + s + ")");
+		// System.out.println("addStock(" + s + ")");
 		getobservableStocksInThisPortfolio().add(s);
 	}
 
+	@Override
 	public String toString() {
+		stocksInThisPortfolio.isEmpty(); // Force the Set to Eagerly load
+		return getId() + " = " + getName() + " : " + getType();
+	}
+
+	public String toStringWithStocks() {
 		stocksInThisPortfolio.isEmpty(); // Force the Set to Eagerly load
 		return getId() + " = " + getName() + " : " + getType() + " - Stocks=" + stocksInThisPortfolio;
 	}
-
 }
