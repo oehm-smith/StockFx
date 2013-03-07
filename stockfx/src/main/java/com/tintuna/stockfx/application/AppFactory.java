@@ -1,5 +1,7 @@
 package com.tintuna.stockfx.application;
 
+import java.io.FileNotFoundException;
+
 import com.tintuna.stockfx.controller.MainController;
 import com.tintuna.stockfx.controller.PortfolioController;
 import com.tintuna.stockfx.controller.PortfoliosController;
@@ -59,7 +61,12 @@ public class AppFactory {
 
 	public Crud getCrudService() {
 		if (crudService == null) {
-			crudService = new Crud();
+			try {
+				crudService = new Crud();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return crudService;
 	}

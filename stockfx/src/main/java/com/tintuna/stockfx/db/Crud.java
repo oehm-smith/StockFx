@@ -37,21 +37,25 @@ public class Crud {
 	private static final String dbLocationSuffix = ";create=true";
 	private static final String dbName = "stockFxDb";
 	private static final String PERSISTENCE_UNIT_NAME = "stockFxPU";
+	private EntityManagerFactory factory;
 	private EntityManager em;
 
-	private void beginTransacgtion() throws FileNotFoundException {
+	public Crud() throws FileNotFoundException {
 		Map<String, String> properties = new HashMap<>();
 		// database dir needs to be set in preferences
 		properties.put(urlProperty, getDbLocation());
-		EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
-		log.debug("Factory open:" + factory.isOpen());
-		if (Persistence.getPersistenceUtil().isLoaded(factory)) {
-			log.debug(PERSISTENCE_UNIT_NAME + " is loaded");
-		} else {
-			log.debug(PERSISTENCE_UNIT_NAME + " is NOT loaded");
-		}
+		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
+	}
+
+	private void beginTransacgtion() {
+		// log.debug("Factory open:" + factory.isOpen());
+		// if (Persistence.getPersistenceUtil().isLoaded(factory)) {
+		// log.debug(PERSISTENCE_UNIT_NAME + " is loaded");
+		// } else {
+		// log.debug(PERSISTENCE_UNIT_NAME + " is NOT loaded");
+		// }
 		em = factory.createEntityManager();
-		log.debug("em:" + em.isOpen());
+		// log.debug("em:" + em.isOpen());
 		em.getTransaction().begin();
 	}
 
@@ -99,80 +103,46 @@ public class Crud {
 	}
 
 	public <T> T create(T t) {
-		try {
-			beginTransacgtion();
-			this.em.persist(t);
-			this.em.flush();
-			this.em.refresh(t);
-			endTransaction();
-			return t;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		beginTransacgtion();
+		this.em.persist(t);
+		this.em.flush();
+		this.em.refresh(t);
+		endTransaction();
+		return t;
 	}
 
 	public <T> void delete(T t) {
-		try {
-			beginTransacgtion();
-			this.em.remove(t);
-			endTransaction();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		beginTransacgtion();
+		this.em.remove(t);
+		endTransaction();
 	}
 
 	public <T> void delete(Class<T> type, Object id) {
-		try {
-			beginTransacgtion();
-			Object ref = this.em.getReference(type, id);
-			this.em.remove(ref);
-			endTransaction();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		beginTransacgtion();
+		Object ref = this.em.getReference(type, id);
+		this.em.remove(ref);
+		endTransaction();
 	}
 
 	public <T> T update(T t) {
-		try {
-			beginTransacgtion();
-			T t2 = (T) this.em.merge(t);
-			endTransaction();
-			return t2;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		beginTransacgtion();
+		T t2 = (T) this.em.merge(t);
+		endTransaction();
+		return t2;
 	}
 
 	public <T> T find(Class<T> type, Integer id) {
-		try {
-			beginTransacgtion();
-			T t2 = (T) this.em.find(type, id);
-			endTransaction();
-			return t2;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		beginTransacgtion();
+		T t2 = (T) this.em.find(type, id);
+		endTransaction();
+		return t2;
 	}
 
 	public List<?> findWithNamedQuery(String namedQueryName) {
-		try {
-			beginTransacgtion();
-			List<?> t2 = this.em.createNamedQuery(namedQueryName).getResultList();
-			endTransaction();
-			return t2;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new ArrayList<>();
+		beginTransacgtion();
+		List<?> t2 = this.em.createNamedQuery(namedQueryName).getResultList();
+		endTransaction();
+		return t2;
 	}
 
 	public List<?> findWithNamedQuery(String namedQueryName, QueryParameter parameters) {
@@ -180,49 +150,31 @@ public class Crud {
 	}
 
 	public List<?> findWithNamedQuery(String queryName, int resultLimit) {
-		try {
-			beginTransacgtion();
-			List<?> t2 = this.em.createNamedQuery(queryName).setMaxResults(resultLimit).getResultList();
-			endTransaction();
-			return t2;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new ArrayList<>();
+		beginTransacgtion();
+		List<?> t2 = this.em.createNamedQuery(queryName).setMaxResults(resultLimit).getResultList();
+		endTransaction();
+		return t2;
 	}
 
 	public <T> List<T> findByNativeQuery(String sql, Class<T> type) {
-		try {
-			beginTransacgtion();
-			@SuppressWarnings("unchecked")
-			List<T> t2 = this.em.createNativeQuery(sql, type).getResultList();
-			endTransaction();
-			return t2;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new ArrayList<>();
+		beginTransacgtion();
+		@SuppressWarnings("unchecked")
+		List<T> t2 = this.em.createNativeQuery(sql, type).getResultList();
+		endTransaction();
+		return t2;
 	}
 
 	public List<?> findWithNamedQuery(String namedQueryName, QueryParameter parameters, int resultLimit) {
-		try {
-			beginTransacgtion();
-			Set<Entry<String, Object>> rawParameters = parameters.parameters().entrySet();
-			Query query = this.em.createNamedQuery(namedQueryName);
-			if (resultLimit > 0)
-				query.setMaxResults(resultLimit);
-			for (Entry<String, Object> entry : rawParameters) {
-				query.setParameter(entry.getKey(), entry.getValue());
-			}
-			List<?> t2 = query.getResultList();
-			endTransaction();
-			return t2;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-gen)erated catch block
-			e.printStackTrace();
+		beginTransacgtion();
+		Set<Entry<String, Object>> rawParameters = parameters.parameters().entrySet();
+		Query query = this.em.createNamedQuery(namedQueryName);
+		if (resultLimit > 0)
+			query.setMaxResults(resultLimit);
+		for (Entry<String, Object> entry : rawParameters) {
+			query.setParameter(entry.getKey(), entry.getValue());
 		}
-		return new ArrayList<>();
+		List<?> t2 = query.getResultList();
+		endTransaction();
+		return t2;
 	}
 }
