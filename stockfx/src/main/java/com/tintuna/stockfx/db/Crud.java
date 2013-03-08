@@ -2,21 +2,19 @@ package com.tintuna.stockfx.db;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.slf4j.Logger;
@@ -24,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.application.TabStandardNames;
+import com.tintuna.stockfx.exception.StockFxException;
+import com.tintuna.stockfx.exception.StockFxPersistenceException;
 import com.tintuna.stockfx.util.TabManagerParameters;
 
 public class Crud {
@@ -97,66 +97,70 @@ public class Crud {
 		this.databaseReady = databaseReady;
 	}
 
-	private void endTransaction() {
-		em.getTransaction().commit();
-		em.close();
+	private void endTransaction() throws StockFxPersistenceException {
+		try {
+			em.getTransaction().commit();
+			em.close();
+		} catch (PersistenceException e) {
+			throw new StockFxPersistenceException(e.getMessage());
+		}
 	}
 
-	public <T> T create(T t) {
+	public <T> T create(T t) throws StockFxPersistenceException {
 		beginTransacgtion();
 		this.em.persist(t);
-		this.em.flush();
-		this.em.refresh(t);
+		// this.em.flush();
+		// this.em.refresh(t);
 		endTransaction();
 		return t;
 	}
 
-	public <T> void delete(T t) {
+	public <T> void delete(T t) throws StockFxPersistenceException {
 		beginTransacgtion();
 		this.em.remove(t);
 		endTransaction();
 	}
 
-	public <T> void delete(Class<T> type, Object id) {
+	public <T> void delete(Class<T> type, Object id) throws StockFxPersistenceException {
 		beginTransacgtion();
 		Object ref = this.em.getReference(type, id);
 		this.em.remove(ref);
 		endTransaction();
 	}
 
-	public <T> T update(T t) {
+	public <T> T update(T t) throws StockFxPersistenceException {
 		beginTransacgtion();
 		T t2 = (T) this.em.merge(t);
 		endTransaction();
 		return t2;
 	}
 
-	public <T> T find(Class<T> type, Integer id) {
+	public <T> T find(Class<T> type, Integer id) throws StockFxPersistenceException {
 		beginTransacgtion();
 		T t2 = (T) this.em.find(type, id);
 		endTransaction();
 		return t2;
 	}
 
-	public List<?> findWithNamedQuery(String namedQueryName) {
+	public List<?> findWithNamedQuery(String namedQueryName) throws StockFxPersistenceException {
 		beginTransacgtion();
 		List<?> t2 = this.em.createNamedQuery(namedQueryName).getResultList();
 		endTransaction();
 		return t2;
 	}
 
-	public List<?> findWithNamedQuery(String namedQueryName, QueryParameter parameters) {
+	public List<?> findWithNamedQuery(String namedQueryName, QueryParameter parameters) throws StockFxPersistenceException {
 		return findWithNamedQuery(namedQueryName, parameters, 0);
 	}
 
-	public List<?> findWithNamedQuery(String queryName, int resultLimit) {
+	public List<?> findWithNamedQuery(String queryName, int resultLimit) throws StockFxPersistenceException {
 		beginTransacgtion();
 		List<?> t2 = this.em.createNamedQuery(queryName).setMaxResults(resultLimit).getResultList();
 		endTransaction();
 		return t2;
 	}
 
-	public <T> List<T> findByNativeQuery(String sql, Class<T> type) {
+	public <T> List<T> findByNativeQuery(String sql, Class<T> type) throws StockFxPersistenceException {
 		beginTransacgtion();
 		@SuppressWarnings("unchecked")
 		List<T> t2 = this.em.createNativeQuery(sql, type).getResultList();
@@ -164,7 +168,7 @@ public class Crud {
 		return t2;
 	}
 
-	public List<?> findWithNamedQuery(String namedQueryName, QueryParameter parameters, int resultLimit) {
+	public List<?> findWithNamedQuery(String namedQueryName, QueryParameter parameters, int resultLimit) throws StockFxPersistenceException {
 		beginTransacgtion();
 		Set<Entry<String, Object>> rawParameters = parameters.parameters().entrySet();
 		Query query = this.em.createNamedQuery(namedQueryName);

@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,9 +19,11 @@ import javafx.scene.layout.BorderPane;
 
 import com.tintuna.stockfx.application.AppFactory;
 import com.tintuna.stockfx.application.MainApplication;
+import com.tintuna.stockfx.exception.StockFxPersistenceException;
 import com.tintuna.stockfx.util.StringUtils;
 
 public class PortfolioController extends BorderPane implements Initializable, Controller {
+	private static final Logger log = LoggerFactory.getLogger(PortfolioController.class);
 	private AppFactory controllerFactory;
 
 	@FXML
@@ -59,13 +64,25 @@ public class PortfolioController extends BorderPane implements Initializable, Co
 			@Override
 			public void handle(Event arg0) {
 				if (StringUtils.isNotNullEmpty(newPortfolioText) && StringUtils.isNotNullEmpty(newTypeText)) {
-					MainApplication.getModelFactory().getPortfoliosModel()
-							.newPortfolio(newPortfolioText.getText(), newTypeText.getText());
-					// TODO - should use an enum or something rather than 'portfolios'
-					MainApplication.getAppFactory().getTabManager().selectTab("portfolios");
+					initializeSavePortfolioButtonCreateNewPortfolio();
+				} else {
+					MainApplication.setMessage("Field name or type is empty");
 				}
 			}
 
 		});
+	}
+
+	private void initializeSavePortfolioButtonCreateNewPortfolio() {
+		try {
+			MainApplication.getModelFactory().getPortfoliosModel().newPortfolio(newPortfolioText.getText(), newTypeText.getText());
+			// TODO - should use an enum or something rather than 'portfolios'
+			MainApplication.getAppFactory().getTabManager().selectTab("portfolios");
+		} catch (StockFxPersistenceException e) {
+			String msg = String.format("Error adding new portfolio with name '%s' and type '%s' - Error #006 - perhaps one with this name and type already exists", newPortfolioText.getText(), newTypeText.getText());
+			log.error(msg);
+			e.printStackTrace();
+			MainApplication.setMessage(msg);
+		}
 	}
 }

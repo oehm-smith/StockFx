@@ -8,6 +8,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,25 +16,28 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Entity
-@NamedQueries({
-		@NamedQuery(name = "Stock.findAll", query = "SELECT p FROM Stock p"),
-		@NamedQuery(name = "Stock.findById", query = "SELECT s FROM Stock s WHERE s.id = :id"),
+@NamedQueries({ @NamedQuery(name = "Stock.findAll", query = "SELECT p FROM Stock p"), @NamedQuery(name = "Stock.findById", query = "SELECT s FROM Stock s WHERE s.id = :id"),
 		@NamedQuery(name = "Stock.findBySymbol", query = "SELECT s FROM Stock s WHERE s.symbol = :symbol"),
-		@NamedQuery(name = "Stock.findByCompanyName",
-				query = "SELECT s FROM Stock s WHERE s.companyName = :companyName") })
+		@NamedQuery(name = "Stock.findByCompanyName", query = "SELECT s FROM Stock s WHERE s.companyName = :companyName") })
 @XmlRootElement
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "symbol", "companyName" }))
 public class Stock implements Comparable {
+	private static final Logger log = LoggerFactory.getLogger(Stock.class);
+
 	private long id;
 
 	private StringProperty symbol;
 	private StringProperty companyName;
 	private ObservableList<Portfolio> portfoliosThatContainThisStock;
-
-	// private Set<Portfolio> portfoliosThatContainThisStock = null;
 
 	public Stock() {
 
@@ -54,9 +58,10 @@ public class Stock implements Comparable {
 		this.id = id;
 	}
 
+	@Column(nullable = false)
 	public String getSymbol() {
 		if (symbol == null) {
-			return "";
+			return null;
 		}
 		return symbol.get();
 	}
@@ -72,6 +77,7 @@ public class Stock implements Comparable {
 		return symbol;
 	}
 
+	@Column(nullable = false)
 	public String getCompanyName() {
 		if (companyName == null) {
 			return "";
@@ -90,10 +96,9 @@ public class Stock implements Comparable {
 		return companyName;
 	}
 
-	@ManyToMany(mappedBy = "StocksInThisPortfolio")
 	// (fetch=FetchType.EAGER)
-			public
-			List<Portfolio> getPortfoliosThatContainThisStock() {
+	@ManyToMany(mappedBy = "StocksInThisPortfolio")
+	public List<Portfolio> getPortfoliosThatContainThisStock() {
 		List<Portfolio> s = new ArrayList<Portfolio>(getobservablePortfoliosThatContainThisStock());
 		return s;
 	}
@@ -148,8 +153,7 @@ public class Stock implements Comparable {
 
 	public String toStringWithPortfolio() {
 		portfoliosThatContainThisStock.isEmpty(); // Force the Set to Eagerly load
-		return getId() + " = " + getSymbol() + " : " + getCompanyName() + " - Portfolios="
-				+ portfoliosThatContainThisStock.size();
+		return getId() + " = " + getSymbol() + " : " + getCompanyName() + " - Portfolios=" + portfoliosThatContainThisStock.size();
 	}
 
 }

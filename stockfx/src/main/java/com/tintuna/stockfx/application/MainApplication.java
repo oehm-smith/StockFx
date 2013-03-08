@@ -3,6 +3,9 @@ package com.tintuna.stockfx.application;
 import java.util.List;
 
 import javafx.application.Application;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -14,6 +17,7 @@ import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tintuna.stockfx.exception.StockFxPersistenceException;
 import com.tintuna.stockfx.model.ModelFactory;
 import com.tintuna.stockfx.persistence.Portfolio;
 import com.tintuna.stockfx.persistence.Stock;
@@ -60,6 +64,22 @@ public class MainApplication extends Application {
 			appFactory.getTabManager().addTabWithNode(TabStandardNames.Portfolios.name(), appFactory.getPortfoliosController());
 		}
 		// else the only tab open will be the preferences one not allowing users to go any 'deeper'
+		clearMessagesHandler();
+	}
+
+	/**
+	 * As soon as the user 'moves' after a message is displayed it will be cleared. Twould be good to add the message to
+	 * an Audit log so its permanently recorded.
+	 */
+	private void clearMessagesHandler() {
+		appFactory.getMainController().getRoot().addEventHandler(Event.ANY, new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event arg0) {
+				setMessage("");
+			}
+
+		});
 	}
 
 	private void setDependencies() {
@@ -85,14 +105,21 @@ public class MainApplication extends Application {
 		// em.getTransaction().begin();
 		// Read the existing entries and write to console
 		// Query q = em.createQuery("select t from Portfolio t");
-		List<Portfolio> portfolioList = getServiceFactory().getPortfolioService().findAll();
+		List<Portfolio> portfolioList = null;
+		List<Stock> stockList = null;
+		try {
+			portfolioList = getServiceFactory().getPortfolioService().findAll();
+			stockList = getServiceFactory().getStockService().findAll();
+		} catch (StockFxPersistenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		for (Portfolio todo : portfolioList) {
 			System.out.println(todo);
 		}
 		System.out.println("Size: " + portfolioList.size());
 
 		// Query q2 = em.createQuery("select s from Stock s");
-		List<Stock> stockList = getServiceFactory().getStockService().findAll();
 		for (Stock stock : stockList) {
 			System.out.println(stock);
 		}

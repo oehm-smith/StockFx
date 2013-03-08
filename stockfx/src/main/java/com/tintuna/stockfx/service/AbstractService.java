@@ -5,6 +5,7 @@ import java.util.List;
 import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.db.Crud;
 import com.tintuna.stockfx.db.QueryParameter;
+import com.tintuna.stockfx.exception.StockFxPersistenceException;
 import com.tintuna.stockfx.exception.ValidationException;
 
 public abstract class AbstractService<T> {
@@ -22,7 +23,7 @@ public abstract class AbstractService<T> {
 		return crud;
 	}
 
-	public T create(final T item) {
+	public T create(final T item) throws StockFxPersistenceException {
 		if (item == null) {
 			throw new ValidationException("AbstractService<T> / create() - object is null.");
 		}
@@ -31,7 +32,7 @@ public abstract class AbstractService<T> {
 		return item;
 	}
 
-	public T update(final T item) {
+	public T update(final T item) throws StockFxPersistenceException {
 		if (item == null) {
 			throw new ValidationException("AbstractService<T> / update() - object is null.");
 		}
@@ -40,7 +41,7 @@ public abstract class AbstractService<T> {
 		return item;
 	}
 
-	public void delete(final T item) {
+	public void delete(final T item) throws StockFxPersistenceException {
 		if (item == null) {
 			throw new ValidationException("AbstractService<T> / delete() - object is null.");
 		}
@@ -52,7 +53,7 @@ public abstract class AbstractService<T> {
 	 * 
 	 * @return all of the entities (that extend this abstract class.
 	 */
-	public List<T> findAll() {
+	public List<T> findAll() throws StockFxPersistenceException {
 		// Expect all Entity classes to have namedQueries and in-particular "<entity class name>.FIND_ALL"
 		// The service classes that extend this should be named <entity>Service
 		String namedQueryString = this.getClass().getSimpleName().replace("Service", "") + ".findAll";
@@ -61,14 +62,14 @@ public abstract class AbstractService<T> {
 		return list;
 	}
 
-	public T find(Class<T> type, String id) {
+	public T find(Class<T> type, String id) throws StockFxPersistenceException {
 		String s = id.replaceAll("\"", "");
 		Integer i = Integer.parseInt(s);
 		return (T) getCrudService().find(type, i);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<T> findWithNamedQuery(String namedQueryName, QueryParameter parameters) {
+	public List<T> findWithNamedQuery(String namedQueryName, QueryParameter parameters) throws StockFxPersistenceException {
 		return (List<T>) crud.findWithNamedQuery(namedQueryName, parameters);
 	}
 }

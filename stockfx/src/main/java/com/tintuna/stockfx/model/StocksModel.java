@@ -11,6 +11,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import com.tintuna.stockfx.application.MainApplication;
+import com.tintuna.stockfx.exception.StockFxPersistenceException;
 import com.tintuna.stockfx.persistence.Portfolio;
 import com.tintuna.stockfx.persistence.Stock;
 
@@ -54,9 +55,11 @@ public class StocksModel {
 	 * Let the user choose from the available stocks not in the selected portfolio (this is associated with).
 	 * 
 	 * @return the list of stocks for all available stocks that aren't already in this model.
+	 * @throws StockFxPersistenceException 
 	 */
-	public ObservableList<Stock> getDifferenceStocks() {
-		Set<Stock> allStocks = new TreeSet<>(MainApplication.getServiceFactory().getStockService().findAll());
+	public ObservableList<Stock> getDifferenceStocks() throws StockFxPersistenceException {
+		Set<Stock> allStocks;
+			allStocks = new TreeSet<>(MainApplication.getServiceFactory().getStockService().findAll());
 		log.debug("All Stocks:" + allStocks);
 		log.debug("Port Stocks:" + getStocks());
 		allStocks.removeAll(getStocks());
@@ -81,7 +84,7 @@ public class StocksModel {
 	// return s.getobservablePortfoliosThatContainThisStock();
 	// }
 
-	public Stock newStock(String symbol, String company) {
+	public Stock newStock(String symbol, String company) throws StockFxPersistenceException {
 		Stock s = new Stock(symbol, company);
 		MainApplication.getServiceFactory().getStockService().create(s);
 		updateStockList(s);

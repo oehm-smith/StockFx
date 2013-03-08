@@ -8,6 +8,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,22 +16,25 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tintuna.stockfx.application.MainApplication;
+import com.tintuna.stockfx.exception.StockFxDuplicateDataException;
 
 @Entity
-@NamedQueries({ @NamedQuery(name = "Portfolio.findAll", query = "SELECT p FROM Portfolio p"),
-		@NamedQuery(name = "Portfolio.findById", query = "SELECT p FROM Portfolio p WHERE p.id = :id"),
+@NamedQueries({ @NamedQuery(name = "Portfolio.findAll", query = "SELECT p FROM Portfolio p"), @NamedQuery(name = "Portfolio.findById", query = "SELECT p FROM Portfolio p WHERE p.id = :id"),
 		@NamedQuery(name = "Portfolio.findByName", query = "SELECT p FROM Portfolio p WHERE p.name = :name"),
 		@NamedQuery(name = "Portfolio.findByType", query = "SELECT p FROM Portfolio p WHERE p.name = :type") })
 @XmlRootElement
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "name", "type" }))
 public class Portfolio {
-	private static final Logger log = LoggerFactory.getLogger(MainApplication.class);
+	private static final Logger log = LoggerFactory.getLogger(Portfolio.class);
 	private long id;
 
 	private StringProperty name;
@@ -56,6 +60,7 @@ public class Portfolio {
 		this.id = id;
 	}
 
+	@Column(nullable = false)
 	public String getName() {
 		if (name == null) {
 			return "";
@@ -64,6 +69,7 @@ public class Portfolio {
 	}
 
 	public void setName(String name) {
+		log.debug(String.format("Portfolio - setName - value: %s",name));
 		getNameProperty().set(name);
 	}
 
@@ -74,6 +80,7 @@ public class Portfolio {
 		return name;
 	}
 
+	@Column(nullable = false)
 	public String getType() {
 		if (type == null) {
 			return "";
@@ -92,13 +99,12 @@ public class Portfolio {
 		return type;
 	}
 
-	@ManyToMany
 	// (mappedBy = "portfoliosThatContainThisStock") // , fetch=FetchType.EAGER)
-			public
-			List<Stock> getStocksInThisPortfolio() {
+	@ManyToMany
+	public List<Stock> getStocksInThisPortfolio() {
 		ObservableList<Stock> setOStocks = getobservableStocksInThisPortfolio();
 		List<Stock> s = new ArrayList<Stock>(setOStocks);
-		log.debug("Portfolio -> getStocksInThisPortfolio "+getName()+": " + s);
+		// log.debug("Portfolio -> getStocksInThisPortfolio " + getName() + ": " + s);
 		return s;
 	}
 
@@ -116,8 +122,11 @@ public class Portfolio {
 		stocksInThisportfolio.isEmpty();
 	}
 
-	public void addStock(Stock s) {
-		// System.out.println("addStock(" + s + ")");
+	public void addStock(Stock s) throws StockFxDuplicateDataException {
+		log.debug("addStock(" + s + ") - check if already contained in:" + getobservableStocksInThisPortfolio());
+		if (getobservableStocksInThisPortfolio().contains(s)) {
+			throw new StockFxDuplicateDataException(s.toString());
+		}
 		getobservableStocksInThisPortfolio().add(s);
 	}
 

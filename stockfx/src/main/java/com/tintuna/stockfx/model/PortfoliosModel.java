@@ -12,6 +12,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import com.tintuna.stockfx.application.MainApplication;
+import com.tintuna.stockfx.exception.StockFxDuplicateDataException;
+import com.tintuna.stockfx.exception.StockFxPersistenceException;
 import com.tintuna.stockfx.persistence.Portfolio;
 import com.tintuna.stockfx.persistence.Stock;
 
@@ -40,9 +42,15 @@ public class PortfoliosModel {
 	}
 
 	public void updatePortfoliosAll() {
-		List<Portfolio> portList = MainApplication.getServiceFactory().getPortfolioService().findAll();
-		portfolios.clear();
-		portfolios.addAll(portList);
+		List<Portfolio> portList;
+		try {
+			portList = MainApplication.getServiceFactory().getPortfolioService().findAll();
+			portfolios.clear();
+			portfolios.addAll(portList);
+		} catch (StockFxPersistenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public ObservableList<Portfolio> getPortfolios() {
@@ -90,26 +98,24 @@ public class PortfoliosModel {
 		if (getSelected() == null) {
 			return null;
 		}
-		System.out.println("-> getPortfoliosStocksForSelected - they are:"
-				+ getSelected().getobservableStocksInThisPortfolio());
+		System.out.println("-> getPortfoliosStocksForSelected - they are:" + getSelected().getobservableStocksInThisPortfolio());
 		return getSelected().getobservableStocksInThisPortfolio();
 	}
 
-	public void newPortfolio(String newPortfolioName, String type) {
+	public void newPortfolio(String newPortfolioName, String type) throws StockFxPersistenceException {
 		Portfolio portfolio = new Portfolio(newPortfolioName, type);
 		MainApplication.getServiceFactory().getPortfolioService().create(portfolio);
 		updatePortfolioList(portfolio);
 	}
 
-	public void addStockToSelectedPortfolio(Stock stock) {
+	public void addStockToSelectedPortfolio(Stock stock) throws StockFxPersistenceException, StockFxDuplicateDataException {
 		if (getSelected() != null) {
 			// EntityManager em = MainApplication.openTransaction();
 			// em.getTransaction().begin();
 			log.debug("Stock:" + stock);
-			getSelected().addStock(stock);
 			MainApplication.getAppFactory().getCrudService().update(getSelected());
+			getSelected().addStock(stock);
 			MainApplication.databaseDebugPrintout();
-
 			// MainApplication.endTransaction(em);
 		}
 	}
