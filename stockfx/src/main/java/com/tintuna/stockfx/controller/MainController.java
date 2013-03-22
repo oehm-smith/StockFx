@@ -22,10 +22,7 @@ import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.application.TabStandardNames;
 import com.tintuna.stockfx.util.TabManagerParameters;
 
-public class MainController extends BorderPane implements Initializable {
-	private AppFactory controllerFactory;
-	@FXML
-	private Parent root;
+public class MainController extends StockFxBorderPaneController {
 	@FXML
 	private VBox portfolioList;
 	@FXML
@@ -37,38 +34,21 @@ public class MainController extends BorderPane implements Initializable {
 	@FXML
 	private Label messageBox;
 
-	public MainController(AppFactory controllerFactory) {
-		this.controllerFactory = controllerFactory;
-		FXMLLoader loader = null;
-		try {
-			loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"));
-			loader.setRoot(this);
-			loader.setController(this);
-			loader.load();
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load Main.fxml", e);
-		}
-	}
-
-	public Parent getRoot() {
-		return root;
-	}
-
-	public VBox getPortfolioList() {
-		return portfolioList;
-	}
-
-	public void setPortfolioList(VBox portfolioList) {
-		this.portfolioList = portfolioList;
-	}
-
-	public GridPane getGridPane() {
-		return gridPane;
-	}
-
-	public void setGridPane(GridPane gridPane) {
-		this.gridPane = gridPane;
-	}
+	// public VBox getPortfolioList() {
+	// return portfolioList;
+	// }
+	//
+	// public void setPortfolioList(VBox portfolioList) {
+	// this.portfolioList = portfolioList;
+	// }
+	//
+	// public GridPane getGridPane() {
+	// return gridPane;
+	// }
+	//
+	// public void setGridPane(GridPane gridPane) {
+	// this.gridPane = gridPane;
+	// }
 
 	public TabPane getTabPane() {
 		return tabPane;
@@ -78,8 +58,27 @@ public class MainController extends BorderPane implements Initializable {
 		this.tabPane = tabPane;
 	}
 
+	// @Override
+	// public void initialize(URL location, ResourceBundle resources) {
+	// initializePrefsButton();
+	// }
+
+	/**
+	 * Display msg's in the Label field defined in the fxml.
+	 * 
+	 * @param msg
+	 */
+	public void setMessage(String msg) {
+		messageBox.setText(msg);
+	}
+
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	protected String getFXML() {
+		return "/fxml/Main.fxml";
+	}
+
+	@Override
+	protected void initializeButtons() {
 		initializePrefsButton();
 	}
 
@@ -92,15 +91,47 @@ public class MainController extends BorderPane implements Initializable {
 		preferencesButton.setDisable(false);
 	}
 
-	protected void openPreferences() {
-		MainApplication
-				.getAppFactory()
-				.getTabManager()
-				.addTabWithNode(TabStandardNames.Prefs.name(), MainApplication.getAppFactory().getPrefsController(),
-						TabManagerParameters.startParams().insertAt(0).openNotAdd(true));
+	private void openPreferences() {
+		MainApplication.getAppFactory().getTabManager().addTabWithNode(TabStandardNames.Prefs.name(), MainApplication.getAppFactory().getPrefsController(),
+				TabManagerParameters.startParams().insertAt(0).openNotAdd(true));
 	}
 
-	public void setMessage(String msg) {
-		messageBox.setText(msg);
+	@Override
+	public void loadSelectedEntity() {
+		// not needed for this Controller
+	}
+
+	@Override
+	public void clearCurrentEntity() {
+		// not needed for this Controller
+	}
+
+	@Override
+	protected void initializeFields() {
+		// not needed for this Controller
+	}
+
+	@Override
+	public void newEntity() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteSelectedEntity() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void controllerDocumentSelected() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void controllerDocumentDeselected() {
+		// TODO Auto-generated method stub
+		
 	}
 }

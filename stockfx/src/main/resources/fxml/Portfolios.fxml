@@ -11,8 +11,6 @@
   <bottom>
     <AnchorPane prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="TOP_LEFT">
       <children>
-        <Button fx:id="newPortfolioButton" alignment="CENTER_LEFT" mnemonicParsing="false" text="New Portfolio" AnchorPane.leftAnchor="10.0" />
-        <Button fx:id="newStockButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="New / Add Stock" AnchorPane.leftAnchor="100.0" />
         <Button id="PrefsButton" fx:id="prefsButton" layoutY="0.0" mnemonicParsing="false" text="Preferences" AnchorPane.leftAnchor="256.0" />
       </children>
       <padding>
@@ -24,22 +22,46 @@
     </AnchorPane>
   </bottom>
   <center>
-    <SplitPane dividerPositions="0.4656319290465632" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0">
+    <SplitPane dividerPositions="0.3303769401330377, 0.6607538802660754" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0">
       <VBox fx:id="portfolioList" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
         <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
           <content>
-            <!--  VBox fx:id="portfolioList" / -->
-            <TableView fx:id="portfolioTable" />
+            <TableView fx:id="collectionTable" />
           </content>
         </ScrollPane>
+        <HBox prefHeight="-1.0" prefWidth="-1.0">
+          <children>
+            <Button fx:id="newCollectionButton" mnemonicParsing="false" text="New" />
+            <Button fx:id="openCollectionButton" mnemonicParsing="false" text="Open" />
+          </children>
+        </HBox>
       </VBox>
       <VBox fx:id="stockList" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
         <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
           <content>
-            <!--  VBox fx:id="portfolioList" / -->
-            <TableView fx:id="stockTable" />
+            <!-- VBox fx:id="portfolioList" / -->
+            <TableView fx:id="portfolioTable" />
           </content>
         </ScrollPane>
+        <HBox prefHeight="-1.0" prefWidth="-1.0">
+          <children>
+            <Button fx:id="newPortfolioButton" alignment="CENTER_LEFT" mnemonicParsing="false" text="New" />
+            <Button fx:id="openPortfolioButton" mnemonicParsing="false" text="Open" />
+          </children>
+        </HBox>
+      </VBox>
+      <VBox minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
+        <ScrollPane fx:id="stocksTablePane" fitToHeight="true" fitToWidth="true" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+          <content>
+            <TableView fx:id="stockTable" prefHeight="200.0" prefWidth="200.0" />
+          </content>
+        </ScrollPane>
+        <HBox prefHeight="-1.0" prefWidth="-1.0">
+          <children>
+            <Button fx:id="newStockButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="New" />
+            <Button fx:id="openStockButton" mnemonicParsing="false" text="Open" />
+          </children>
+        </HBox>
       </VBox>
     </SplitPane>
   </center>

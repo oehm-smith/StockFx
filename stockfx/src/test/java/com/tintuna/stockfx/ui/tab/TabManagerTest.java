@@ -1,4 +1,4 @@
-package com.tintuna.stockfx.controller;
+package com.tintuna.stockfx.ui.tab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -10,7 +10,9 @@ import javafx.scene.layout.BorderPane;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.tintuna.stockfx.controller.DummyController;
 import com.tintuna.stockfx.exception.StockFxException;
+import com.tintuna.stockfx.ui.tab.TabManager;
 import com.tintuna.stockfx.util.TabManagerParameters;
 
 public class TabManagerTest {

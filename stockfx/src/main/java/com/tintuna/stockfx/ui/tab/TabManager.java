@@ -1,4 +1,4 @@
-package com.tintuna.stockfx.controller;
+package com.tintuna.stockfx.ui.tab;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tintuna.stockfx.application.MainApplication;
+import com.tintuna.stockfx.controller.StockFxBorderPaneController;
 import com.tintuna.stockfx.exception.StockFxException;
 import com.tintuna.stockfx.util.StringUtils;
 import com.tintuna.stockfx.util.TabManagerParameters;
@@ -35,13 +36,12 @@ public class TabManager implements TabI {
 
 	private void initTabPane() {
 		// There is a Tab.onSelectionChanged() property but you can't see if it was selected or deselected
+		// TODO - this is firing even when the tab is opened and so the contents for any item that was opened for viewing / editing get cleared.  Need to prevent this.
 		tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 			@Override
 			public void changed(ObservableValue<? extends Tab> tab, Tab oldTab, Tab newTab) {
-				if (oldTab != null) {
+				if (!(oldTab == null || newTab == null)) {
 					deselectedTab(oldTab);
-				}
-				if (oldTab != null) {
 					selectedTab(newTab);
 				}
 			}
@@ -56,12 +56,12 @@ public class TabManager implements TabI {
 	}
 
 	@Override
-	public void addTabWithNode(String tabName, Controller controller) {
+	public void addTabWithNode(String tabName, StockFxBorderPaneController controller) {
 		addTabWithNode(tabName, controller, TabManagerParameters.startParams()); // use default parameters
 	}
 
 	@Override
-	public void addTabWithNode(String tabName, Controller controller, TabManagerParameters params) {
+	public void addTabWithNode(String tabName, StockFxBorderPaneController controller, TabManagerParameters params) {
 		int tabIndex;
 		int indexToInsertAt;
 		if (params.isOpenNotAdd()) {
@@ -96,28 +96,43 @@ public class TabManager implements TabI {
 			if (params.isUseSuffix()) {
 				tabName = addSuffix(tabName);
 			} else {
-				throw new StockFxException(String.format(
-						"Tab with name '%s' already exists.  Use TabManagerParam.useSuffix(true) as an option.",
-						tabName));
+				throw new StockFxException(String.format("Tab with name '%s' already exists.  Use TabManagerParam.useSuffix(true) as an option.", tabName));
 			}
 		}
 		Tab newTab = new Tab(tabName);
-		log.debug("New Tab: "+tabName+", inseted at:"+indexToInsertAt);
+		log.debug("New Tab: " + tabName + ", inseted at:" + indexToInsertAt);
 		newTab.setContent(controller.getRoot());
-		newTab.getProperties().put(Controller.class, controller); // When the user selects that tab the contents need to
-																	// be updated with a new Controller in some cases
+		newTab.getProperties().put(StockFxBorderPaneController.class, controller); // When the user selects that tab the
+																					// contents need to
+		// be updated with a new Controller in some cases
 		getTabPane().getTabs().add(indexToInsertAt, newTab);
 		getTabPane().getSelectionModel().select(newTab);
+		// Now the event for a changed tab is called and the respective (open or new) controller method is called - see selectedTab()
 	}
 
+	/**
+	 * When a tab is selected the content needs to be reloaded (in most cases).
+	 * 
+	 * @param newTab
+	 */
 	protected void selectedTab(Tab newTab) {
-		Controller existingController = (Controller) newTab.getProperties().get(Controller.class);
-		if (existingController instanceof StockController) {
-			// tab selected is for Stocks, need to create a new controller (for example a different portfolio was selected and now need a new controller to mirror this)
-			StockController sc = MainApplication.getAppFactory().getStockController();
-			newTab.getProperties().put(Controller.class, sc);
-			newTab.setContent(sc.getRoot());
-		}
+		StockFxBorderPaneController existingController = (StockFxBorderPaneController) newTab.getProperties().get(StockFxBorderPaneController.class);
+		log.debug("selectedTab - existingController:" + existingController);
+		existingController.controllerDocumentSelected();
+//		if (existingController instanceof StockController) {
+//			// tab selected is for Stocks, need to create a new controller (for example a different portfolio was
+//			// selected and now need a new controller to mirror this)
+//			StockController sc = MainApplication.getAppFactory().getStockController();
+//			newTab.getProperties().put(StockFxBorderPaneController.class, sc);
+//			newTab.setContent(sc.getRoot());
+//		} else if (existingController instanceof PortfolioController) {
+//			// tab selected is for Stocks, need to create a new controller (for example a different portfolio was
+//			// selected and now need a new controller to mirror this)
+//			boolean openSelected = false;
+//			PortfolioController pc = MainApplication.getAppFactory().getPortfolioController(openSelected);
+//			newTab.getProperties().put(StockFxBorderPaneController.class, pc);
+//			newTab.setContent(pc.getRoot());
+//		}
 	}
 
 	protected void deselectedTab(Tab oldTab) {

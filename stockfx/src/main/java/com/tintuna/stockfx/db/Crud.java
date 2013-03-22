@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.application.TabStandardNames;
-import com.tintuna.stockfx.exception.StockFxException;
+import com.tintuna.stockfx.controller.PrefsController;
 import com.tintuna.stockfx.exception.StockFxPersistenceException;
 import com.tintuna.stockfx.util.TabManagerParameters;
 
@@ -71,7 +71,8 @@ public class Crud {
 			setDatabaseReady(false);
 			MainApplication.getAppFactory().getTabManager().addTabWithNode(TabStandardNames.Prefs.name(), MainApplication.getAppFactory().getPrefsController(),
 					TabManagerParameters.startParams().insertAt(0).openNotAdd(true));
-			MainApplication.getAppFactory().getPrefsController().addDBPathLostFocusListener(new ChangeListener<Boolean>() {
+			PrefsController prefsController = MainApplication.getAppFactory().getPrefsController();
+			prefsController.addDBPathLostFocusListener(new ChangeListener<Boolean>() {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) {
 					if (arg1 == true && arg2 == false) {

@@ -3,28 +3,32 @@ package com.tintuna.stockfx.model;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.tintuna.stockfx.application.MainApplication;
+import com.tintuna.stockfx.exception.StockFxException;
 import com.tintuna.stockfx.exception.StockFxPersistenceException;
 import com.tintuna.stockfx.persistence.Portfolio;
+import com.tintuna.stockfx.persistence.PortfolioStock;
 import com.tintuna.stockfx.persistence.Stock;
 
 /**
- * Model of the Stocks associated with a particular portfolio.
+ * Model of the Stocks associated with a particular portfolio. But rather than deal in stocks directly, deal in
+ * Portfoliostocks which has a 1:1 with a StockHolding (ie. user's holding) and the Stock which is the raw item (and has
+ * price history etc) ie. StockHolding -- Portfoliostock -- Stock
  * 
  * @author bsmith
  */
 public class StocksModel {
-	private static final Logger log = LoggerFactory.getLogger(MainApplication.class);
+	private static final Logger log = LoggerFactory.getLogger(StocksModel.class);
 
-	private ObservableList<Stock> stocks;
-	private Stock selectedStock = null;
+	private ObservableList<PortfolioStock> stocks;
+	private PortfolioStock selectedStock = null;
 	private Portfolio portfolio;
 
 	public StocksModel(Portfolio portfolio) {
@@ -33,21 +37,23 @@ public class StocksModel {
 		updateStocksAll();
 	}
 
-	public void updateStockList(Stock s) {
+	public void updateStockList(PortfolioStock s) {
 		stocks.add(s);
 	}
 
 	public void updateStocksAll() {
 		// List<Stock> stockList = MainApplication.getServiceFactory().getStockService().findAll();
 		stocks.clear();
-		stocks.addAll(portfolio.getobservableStocksInThisPortfolio());
+		stocks.addAll(portfolio.getPortfoliostockCollection());
 	}
 
-	public ObservableList<Stock> getStocks() {
+	public ObservableList<PortfolioStock> getStocks() {
+		log.debug(String.format("getStocks - StockTable's items: %s",stocks)); 
+
 		return stocks;
 	}
 
-	public void setStocks(ObservableList<Stock> stocks) {
+	public void setStocks(ObservableList<PortfolioStock> stocks) {
 		this.stocks = stocks;
 	}
 
@@ -55,11 +61,11 @@ public class StocksModel {
 	 * Let the user choose from the available stocks not in the selected portfolio (this is associated with).
 	 * 
 	 * @return the list of stocks for all available stocks that aren't already in this model.
-	 * @throws StockFxPersistenceException 
+	 * @throws StockFxPersistenceException
 	 */
-	public ObservableList<Stock> getDifferenceStocks() throws StockFxPersistenceException {
-		Set<Stock> allStocks;
-			allStocks = new TreeSet<>(MainApplication.getServiceFactory().getStockService().findAll());
+	public ObservableList<PortfolioStock> getDifferenceStocks() throws StockFxPersistenceException {
+		Set<PortfolioStock> allStocks;
+		allStocks = new TreeSet<>(MainApplication.getServiceFactory().getPortfoliostockService().findAll());
 		log.debug("All Stocks:" + allStocks);
 		log.debug("Port Stocks:" + getStocks());
 		allStocks.removeAll(getStocks());
@@ -67,15 +73,19 @@ public class StocksModel {
 		return FXCollections.observableArrayList(allStocks);
 	}
 
-	public void addStocksListener(ListChangeListener<? super Stock> listener) {
+	public void addStocksListener(ListChangeListener<? super PortfolioStock> listener) {
 		stocks.addListener(listener);
 	}
 
-	public Stock getSelected() {
+	public PortfolioStock getSelected() {
 		return selectedStock;
 	}
 
-	public void setSelected(Stock selectedStock) {
+	public void setSelected(PortfolioStock selectedStock) {
+		log.debug("-> setSelected: "+selectedStock);
+		if (selectedStock == null) {
+			throw new StockFxException("selectedStock == null");
+		}
 		this.selectedStock = selectedStock;
 	}
 
@@ -84,11 +94,38 @@ public class StocksModel {
 	// return s.getobservablePortfoliosThatContainThisStock();
 	// }
 
-	public Stock newStock(String symbol, String company) throws StockFxPersistenceException {
+	/**
+	 * 
+	 * @param symbol
+	 * @param company
+	 * @return the portfolioStock which has a 1:1 with a StockHolding (ie. user's holding) and the Stock which is the
+	 *         raw item (and has price history etc) StockHolding -- Portfoliostock -- Stock
+	 * @throws StockFxPersistenceException
+	 */
+	public PortfolioStock newStock(String symbol, String company) throws StockFxPersistenceException {
 		Stock s = new Stock(symbol, company);
+		PortfolioStock portfolioStock = new PortfolioStock();
+		portfolioStock.setStockid(s);
+//		s.setPortfoliostock(pstock); - don't need to do this as mappedby annotation arg is on the stock
 		MainApplication.getServiceFactory().getStockService().create(s);
-		updateStockList(s);
-		return s;
+		MainApplication.getServiceFactory().getPortfoliostockService().create(portfolioStock);
+		updateStockList(portfolioStock);
+		log.debug(String.format("newStock - %s, %s - portfolioStock: %s - stockList: %s",symbol,company,portfolioStock,getStocks()));
+		return portfolioStock;
+	}
+	
+	public void addStockToSelectedPortfolio(PortfolioStock portfolioStock) throws StockFxPersistenceException {
+		Portfolio portfolio = MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelected();
+		// JPA 'mappedBy' adds the portfolioStock to the Collection on the Portfolio entity
+		portfolioStock.setPortfolioid(portfolio);
+		MainApplication.getServiceFactory().getPortfoliostockService().update(portfolioStock);
+		log.debug("addStockToSelectedPortfolio - portfolioStock:"+portfolioStock+", portfolio:"+portfolio);
+	}
+
+	public void updateSelected(String symbol, String company) throws StockFxPersistenceException {
+		getSelected().getStockid().setSymbol(symbol);
+		getSelected().getStockid().setCompanyName(company);
+		MainApplication.getServiceFactory().getStockService().update(getSelected().getStockid());
 	}
 
 }

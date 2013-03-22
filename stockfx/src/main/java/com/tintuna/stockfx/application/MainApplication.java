@@ -5,14 +5,8 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.tintuna.stockfx.exception.StockFxPersistenceException;
 import com.tintuna.stockfx.model.ModelFactory;
 import com.tintuna.stockfx.persistence.Portfolio;
+import com.tintuna.stockfx.persistence.PortfolioStock;
 import com.tintuna.stockfx.persistence.Stock;
 
 public class MainApplication extends Application {
@@ -106,10 +101,10 @@ public class MainApplication extends Application {
 		// Read the existing entries and write to console
 		// Query q = em.createQuery("select t from Portfolio t");
 		List<Portfolio> portfolioList = null;
-		List<Stock> stockList = null;
+		List<PortfolioStock> stockList = null;
 		try {
 			portfolioList = getServiceFactory().getPortfolioService().findAll();
-			stockList = getServiceFactory().getStockService().findAll();
+			stockList = getServiceFactory().getPortfoliostockService().findAll();
 		} catch (StockFxPersistenceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -120,7 +115,7 @@ public class MainApplication extends Application {
 		System.out.println("Size: " + portfolioList.size());
 
 		// Query q2 = em.createQuery("select s from Stock s");
-		for (Stock stock : stockList) {
+		for (PortfolioStock stock : stockList) {
 			System.out.println(stock);
 		}
 		System.out.println("Size: " + stockList.size());

@@ -1,143 +1,160 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.tintuna.stockfx.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.Collection;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tintuna.stockfx.application.MainApplication;
-import com.tintuna.stockfx.exception.StockFxDuplicateDataException;
 
+/**
+ * 
+ * @author Brooke Smith brooke@tintuna.org
+ */
 @Entity
-@NamedQueries({ @NamedQuery(name = "Portfolio.findAll", query = "SELECT p FROM Portfolio p"), @NamedQuery(name = "Portfolio.findById", query = "SELECT p FROM Portfolio p WHERE p.id = :id"),
-		@NamedQuery(name = "Portfolio.findByName", query = "SELECT p FROM Portfolio p WHERE p.name = :name"),
-		@NamedQuery(name = "Portfolio.findByType", query = "SELECT p FROM Portfolio p WHERE p.name = :type") })
+@Table(name = "portfolio")
 @XmlRootElement
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "name", "type" }))
-public class Portfolio {
-	private static final Logger log = LoggerFactory.getLogger(Portfolio.class);
-	private long id;
-
-	private StringProperty name;
-	private StringProperty type;
-	private ObservableList<Stock> stocksInThisPortfolio;
-
-	public Portfolio() {
-
-	}
-
-	public Portfolio(String name, String type) {
-		setName(name);
-		setType(type);
-	}
-
+@NamedQueries({ @NamedQuery(name = "Portfolio.findAll", query = "SELECT p FROM Portfolio p"), @NamedQuery(name = "Portfolio.findById", query = "SELECT p FROM Portfolio p WHERE p.id = :id"),
+		@NamedQuery(name = "Portfolio.findByName", query = "SELECT p FROM Portfolio p WHERE p.name = :name") })
+public class Portfolio implements Serializable {
+	private static final Logger log = LoggerFactory.getLogger(MainApplication.class);
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public long getId() {
-		return id;
+	@Column(name = "id")
+	private Integer id;
+	@Basic(optional = false)
+	@Column(name = "name")
+	private String name;
+	// @JoinColumn(name = "PortfolioType_id", referencedColumnName = "id")
+	// @ManyToOne
+	@Enumerated(EnumType.STRING)
+	private PType portfolioType;
+	@Column(name = "HRN_SRN")
+	private String hrnSrn;
+	@JoinColumn(name = "Collection_id", referencedColumnName = "id")
+	@ManyToOne
+	private PCollection collectionid;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "portfolioid")
+	private Collection<PortfolioStock> portfoliostockCollection;
+
+	public Portfolio() {
 	}
 
-	public void setId(long id) {
+	public Portfolio(Integer id) {
 		this.id = id;
 	}
 
-	@Column(nullable = false)
+	public Portfolio(String name) {
+		this.name = name;
+	}
+
+	public Portfolio(String name, PType type) {
+		this.name = name;
+		this.portfolioType = type;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 	public String getName() {
-		if (name == null) {
-			return "";
-		}
-		return name.get();
-	}
-
-	public void setName(String name) {
-		log.debug(String.format("Portfolio - setName - value: %s",name));
-		getNameProperty().set(name);
-	}
-
-	public StringProperty getNameProperty() {
-		if (name == null) {
-			name = new SimpleStringProperty();
-		}
 		return name;
 	}
 
-	@Column(nullable = false)
-	public String getType() {
-		if (type == null) {
-			return "";
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public PType getPortfolioTypeid() {
+		return portfolioType;
+	}
+
+	public void setPortfolioTypeid(PType portfolioType) {
+		this.portfolioType = portfolioType;
+	}
+
+	public String getHrnSrn() {
+		return hrnSrn;
+	}
+
+	public void setHrnSrn(String hrnSrn) {
+		this.hrnSrn = hrnSrn;
+	}
+
+	public PCollection getCollectionid() {
+		return collectionid;
+	}
+
+	public void setCollectionid(PCollection collectionid) {
+		this.collectionid = collectionid;
+	}
+
+	@XmlTransient
+	public Collection<PortfolioStock> getPortfoliostockCollection() {
+		return portfoliostockCollection;
+	}
+
+	public void setPortfoliostockCollection(Collection<PortfolioStock> portfoliostockCollection) {
+		this.portfoliostockCollection = portfoliostockCollection;
+		log.debug("setPortfoliostockCollection - " + portfoliostockCollection);
+	}
+
+	public void addPortfolioStock(PortfolioStock stock) {
+		this.portfoliostockCollection.add(stock);
+		log.debug("addPortfolioStock - " + stock);
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 0;
+		hash += (id != null ? id.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		// TODO: Warning - this method won't work in the case the id fields are not set
+		if (!(object instanceof Portfolio)) {
+			return false;
 		}
-		return type.get();
-	}
-
-	public void setType(String type) {
-		getTypeProperty().set(type);
-	}
-
-	public StringProperty getTypeProperty() {
-		if (type == null) {
-			type = new SimpleStringProperty();
+		Portfolio other = (Portfolio) object;
+		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+			return false;
 		}
-		return type;
-	}
-
-	// (mappedBy = "portfoliosThatContainThisStock") // , fetch=FetchType.EAGER)
-	@ManyToMany
-	public List<Stock> getStocksInThisPortfolio() {
-		ObservableList<Stock> setOStocks = getobservableStocksInThisPortfolio();
-		List<Stock> s = new ArrayList<Stock>(setOStocks);
-		// log.debug("Portfolio -> getStocksInThisPortfolio " + getName() + ": " + s);
-		return s;
-	}
-
-	@Transient
-	public ObservableList<Stock> getobservableStocksInThisPortfolio() {
-		if (stocksInThisPortfolio == null) {
-			stocksInThisPortfolio = FXCollections.observableArrayList();
-		}
-		return stocksInThisPortfolio;
-	}
-
-	public void setStocksInThisPortfolio(List<Stock> stocksInThisportfolio) {
-		this.stocksInThisPortfolio = FXCollections.observableList(stocksInThisportfolio);
-		// There is a complete HANG in here if the fetch isn't set to eager or this isEmpty() test isn't performed
-		stocksInThisportfolio.isEmpty();
-	}
-
-	public void addStock(Stock s) throws StockFxDuplicateDataException {
-		log.debug("addStock(" + s + ") - check if already contained in:" + getobservableStocksInThisPortfolio());
-		if (getobservableStocksInThisPortfolio().contains(s)) {
-			throw new StockFxDuplicateDataException(s.toString());
-		}
-		getobservableStocksInThisPortfolio().add(s);
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		stocksInThisPortfolio.isEmpty(); // Force the Set to Eagerly load
-		return getId() + " = " + getName() + " : " + getType();
+		return "Portfolio[ id=" + id + ", name=" + name + ", #stocks:" + getPortfoliostockCollection().size() + " ]";
 	}
 
-	public String toStringWithStocks() {
-		stocksInThisPortfolio.isEmpty(); // Force the Set to Eagerly load
-		return getId() + " = " + getName() + " : " + getType() + " - Stocks=" + stocksInThisPortfolio;
-	}
 }

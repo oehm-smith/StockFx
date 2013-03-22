@@ -1,92 +1,109 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.tintuna.stockfx.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.Collection;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+/**
+ * 
+ * @author Brooke Smith brooke@tintuna.org
+ */
 @Entity
-@NamedQueries({ @NamedQuery(name = "Stock.findAll", query = "SELECT p FROM Stock p"), @NamedQuery(name = "Stock.findById", query = "SELECT s FROM Stock s WHERE s.id = :id"),
-		@NamedQuery(name = "Stock.findBySymbol", query = "SELECT s FROM Stock s WHERE s.symbol = :symbol"),
-		@NamedQuery(name = "Stock.findByCompanyName", query = "SELECT s FROM Stock s WHERE s.companyName = :companyName") })
+@Table(name = "stock")
 @XmlRootElement
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "symbol", "companyName" }))
-public class Stock implements Comparable {
-	private static final Logger log = LoggerFactory.getLogger(Stock.class);
-
-	private long id;
-
-	private StringProperty symbol;
+@NamedQueries({ @NamedQuery(name = "Stock.findAll", query = "SELECT s FROM Stock s"), @NamedQuery(name = "Stock.findById", query = "SELECT s FROM Stock s WHERE s.id = :id"),
+		@NamedQuery(name = "Stock.findBySymbol", query = "SELECT s FROM Stock s WHERE s.symbol = :symbol"),
+		@NamedQuery(name = "Stock.findByCompanyName", query = "SELECT s FROM Stock s WHERE s.companyName = :companyName"),
+		@NamedQuery(name = "Stock.findByUrl", query = "SELECT s FROM Stock s WHERE s.url = :url") })
+public class Stock implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private Integer id;
+	private String symbol;
 	private StringProperty companyName;
-	private ObservableList<Portfolio> portfoliosThatContainThisStock;
+	private String url;
+	private Collection<Other> otherCollection;
+	private Collection<Morningstar> morningstarCollection;
+	private Collection<Pricehistory> pricehistoryCollection;
+	private Collection<Dividends> dividendsCollection;
+	private Exchange exchangeid;
+	private Collection<Motleyfool> motleyfoolCollection;
+	private PortfolioStock portfoliostock;
 
 	public Stock() {
-
 	}
 
-	public Stock(String symbol, String company) {
-		setSymbol(symbol);
-		setCompanyName(company);
+	public Stock(Integer id) {
+		this.id = id;
+	}
+
+	public Stock(Integer id, String symbol, String companyName, String url) {
+		this.id = id;
+		this.symbol = symbol;
+		setCompanyName(companyName);
+		this.url = url;
+	}
+
+	public Stock(String symbol, String companyName, String url) {
+		this.symbol = symbol;
+		setCompanyName(companyName);
+		this.url = url;
+	}
+
+	public Stock(String symbol, String companyName) {
+		this.symbol = symbol;
+		setCompanyName(companyName);
 	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public long getId() {
+	@Column(name = "id")
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	@Column(nullable = false)
+	@Basic(optional = false)
+	@Column(name = "symbol")
 	public String getSymbol() {
-		if (symbol == null) {
-			return null;
-		}
-		return symbol.get();
-	}
-
-	public void setSymbol(String name) {
-		getSymbolProperty().set(name);
-	}
-
-	public StringProperty getSymbolProperty() {
-		if (symbol == null) {
-			symbol = new SimpleStringProperty();
-		}
 		return symbol;
 	}
 
-	@Column(nullable = false)
-	public String getCompanyName() {
-		if (companyName == null) {
-			return "";
-		}
-		return companyName.get();
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
 	}
 
-	public void setCompanyName(String type) {
-		getCompanyNameProperty().set(type);
+	@Basic(optional = false)
+	@Column(name = "companyName")
+	public String getCompanyName() {
+		return getCompanyNameProperty().get();
+	}
+
+	public void setCompanyName(String companyName) {
+		getCompanyNameProperty().set(companyName);
 	}
 
 	public StringProperty getCompanyNameProperty() {
@@ -96,64 +113,108 @@ public class Stock implements Comparable {
 		return companyName;
 	}
 
-	// (fetch=FetchType.EAGER)
-	@ManyToMany(mappedBy = "StocksInThisPortfolio")
-	public List<Portfolio> getPortfoliosThatContainThisStock() {
-		List<Portfolio> s = new ArrayList<Portfolio>(getobservablePortfoliosThatContainThisStock());
-		return s;
+	@Basic(optional = false)
+	@Column(name = "url")
+	public String getUrl() {
+		return url;
 	}
 
-	@Transient
-	public ObservableList<Portfolio> getobservablePortfoliosThatContainThisStock() {
-		if (portfoliosThatContainThisStock == null) {
-			portfoliosThatContainThisStock = FXCollections.observableArrayList();
-		}
-		return portfoliosThatContainThisStock;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
-	public void setPortfoliosThatContainThisStock(List<Portfolio> portfoliosThatContainThisStock) {
-		this.portfoliosThatContainThisStock = FXCollections.observableList(portfoliosThatContainThisStock);
-		// There is a complete HANG in here if the fetch isn't set to eager or this isEmpty() test isn't performed
-		portfoliosThatContainThisStock.isEmpty();
+	@XmlTransient
+	@OneToMany(mappedBy = "stockid")
+	public Collection<Other> getOtherCollection() {
+		return otherCollection;
 	}
 
-	public void addPortfolio(Portfolio p) {
-		getobservablePortfoliosThatContainThisStock().add(p);
+	public void setOtherCollection(Collection<Other> otherCollection) {
+		this.otherCollection = otherCollection;
 	}
 
-	/* ******************** */
-	public boolean equals(Object obj) {
-		if (obj instanceof Stock) {
-			Stock s = (Stock) obj;
-			return (s.getSymbol().equals(this.getSymbol())) && s.getCompanyName().equals(this.getCompanyName());
-		} else {
-			return false;
-		}
+	@XmlTransient
+	@OneToMany(mappedBy = "stockid")
+	public Collection<Morningstar> getMorningstarCollection() {
+		return morningstarCollection;
 	}
 
-	public int hashCode() {
-		return (getSymbol() + getCompanyName()).hashCode();
+	public void setMorningstarCollection(Collection<Morningstar> morningstarCollection) {
+		this.morningstarCollection = morningstarCollection;
+	}
+
+	@XmlTransient
+	@OneToMany(mappedBy = "stockid")
+	public Collection<Pricehistory> getPricehistoryCollection() {
+		return pricehistoryCollection;
+	}
+
+	public void setPricehistoryCollection(Collection<Pricehistory> pricehistoryCollection) {
+		this.pricehistoryCollection = pricehistoryCollection;
+	}
+
+	@XmlTransient
+	@OneToMany(mappedBy = "stockid")
+	public Collection<Dividends> getDividendsCollection() {
+		return dividendsCollection;
+	}
+
+	public void setDividendsCollection(Collection<Dividends> dividendsCollection) {
+		this.dividendsCollection = dividendsCollection;
+	}
+
+	@JoinColumn(name = "Exchange_id", referencedColumnName = "id")
+	@OneToOne
+	public Exchange getExchangeid() {
+		return exchangeid;
+	}
+
+	public void setExchangeid(Exchange exchangeid) {
+		this.exchangeid = exchangeid;
+	}
+
+	@XmlTransient
+	@OneToMany(mappedBy = "stockid")
+	public Collection<Motleyfool> getMotleyfoolCollection() {
+		return motleyfoolCollection;
+	}
+
+	public void setMotleyfoolCollection(Collection<Motleyfool> motleyfoolCollection) {
+		this.motleyfoolCollection = motleyfoolCollection;
+	}
+
+	@OneToOne(mappedBy = "stockid")
+	public PortfolioStock getPortfoliostock() {
+		return portfoliostock;
+	}
+
+	public void setPortfoliostock(PortfolioStock portfoliostock) {
+		this.portfoliostock = portfoliostock;
 	}
 
 	@Override
-	public int compareTo(Object obj) {
-		if (obj instanceof Stock) {
-			Stock s = (Stock) obj;
-			return ((s.getSymbol() + s.getCompanyName()).compareTo((this.getSymbol() + this.getCompanyName())));
-		} else {
-			return -1;
+	public int hashCode() {
+		int hash = 0;
+		hash += (id != null ? id.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		// TODO: Warning - this method won't work in the case the id fields are not set
+		if (!(object instanceof Stock)) {
+			return false;
 		}
+		Stock other = (Stock) object;
+		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		portfoliosThatContainThisStock.isEmpty(); // Force the Set to Eagerly load
-		return getId() + " = " + getSymbol() + " : " + getCompanyName();
-	}
-
-	public String toStringWithPortfolio() {
-		portfoliosThatContainThisStock.isEmpty(); // Force the Set to Eagerly load
-		return getId() + " = " + getSymbol() + " : " + getCompanyName() + " - Portfolios=" + portfoliosThatContainThisStock.size();
+		return "Stock[ id=" + id + ", Symbol=" + symbol + ", company:" + companyName + " ]";
 	}
 
 }

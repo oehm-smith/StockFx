@@ -3,21 +3,20 @@ package com.tintuna.stockfx.formatter;
 import javafx.scene.control.ListCell;
 import javafx.scene.paint.Color;
 
-import com.tintuna.stockfx.persistence.Stock;
+import com.tintuna.stockfx.persistence.PortfolioStock;
 
-public class StocksComboCellFormatter extends ListCell<Stock> {
+public class StocksComboCellFormatter extends ListCell<PortfolioStock> {
 	public StocksComboCellFormatter() {
 
 	}
 
-	protected void updateItem(Stock stock, boolean empty) {
+	protected void updateItem(PortfolioStock portfolioStock, boolean empty) {
 		// calling super here is very important - don't skip this!
-		super.updateItem(stock, empty);
+		super.updateItem(portfolioStock, empty);
 
-		if (stock == null) {
-			setText("null buddy");
+		if (portfolioStock == null) {
 		} else {
-			setText(stock.getSymbol() + " - " + stock.getCompanyName());
+			setText(portfolioStock.getStockid().getSymbol() + " - " + portfolioStock.getStockid().getCompanyName());
 			setTextFill(Color.BLACK);
 		}
 	}

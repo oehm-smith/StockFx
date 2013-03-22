@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.tintuna.stockfx.application.MainApplication;
 
-public class PreferencesController extends BorderPane implements Initializable, Controller {
+public class PreferencesController extends StockFxBorderPaneController implements PrefsController {
 	private static final Logger log = LoggerFactory.getLogger(PreferencesController.class);
 
 	@FXML
@@ -30,25 +30,32 @@ public class PreferencesController extends BorderPane implements Initializable, 
 	@FXML
 	private TextField morningStarPWText;
 
-	public PreferencesController() {
-		FXMLLoader loader = null;
-		try {
-			loader = new FXMLLoader(getClass().getResource("/fxml/Preferences.fxml"));
-			loader.setRoot(this);
-			loader.setController(this);
-			loader.load();
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load Stock.fxml", e);
-		}
+	public void addDBPathLostFocusListener(ChangeListener<Boolean> listener) {
+		databaseUrlText.focusedProperty().addListener(listener);
 	}
 
 	@Override
-	public Parent getRoot() {
-		return root;
+	protected String getFXML() {
+		return "/fxml/Preferences.fxml";
 	}
 
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	protected void initializeButtons() {
+		// none to define
+	}
+
+	@Override
+	public void loadSelectedEntity() {
+		// not relevant here
+	}
+
+	@Override
+	public void clearCurrentEntity() {
+		// not relevant here
+	}
+
+	@Override
+	protected void initializeFields() {
 		databaseUrlText.textProperty().bindBidirectional(
 				MainApplication.getModelFactory().getStockFxPreferences().getDatabaseURLProperty());
 		morningstarUsernameText.textProperty().bind(
@@ -57,7 +64,27 @@ public class PreferencesController extends BorderPane implements Initializable, 
 				MainApplication.getModelFactory().getStockFxPreferences().getMorningStarPWProperty());
 	}
 
-	public void addDBPathLostFocusListener(ChangeListener<Boolean> listener) {
-		databaseUrlText.focusedProperty().addListener(listener);
+	@Override
+	public void newEntity() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteSelectedEntity() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void controllerDocumentSelected() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void controllerDocumentDeselected() {
+		// TODO Auto-generated method stub
+		
 	}
 }

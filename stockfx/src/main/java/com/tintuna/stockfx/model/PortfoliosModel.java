@@ -1,38 +1,31 @@
 package com.tintuna.stockfx.model;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.exception.StockFxDuplicateDataException;
 import com.tintuna.stockfx.exception.StockFxPersistenceException;
+import com.tintuna.stockfx.persistence.PCollection;
+import com.tintuna.stockfx.persistence.PType;
 import com.tintuna.stockfx.persistence.Portfolio;
-import com.tintuna.stockfx.persistence.Stock;
+import com.tintuna.stockfx.persistence.PortfolioStock;
 
 public class PortfoliosModel {
 	private static final Logger log = LoggerFactory.getLogger(PortfoliosModel.class);
-	private static PortfoliosModel portfoliosInstanece = null;
-
+	private PCollection collection;
 	private ObservableList<Portfolio> portfolios;
 	private Portfolio selected = null;
 	private StringProperty selectPortfolioNameProperty;
 
-	public static PortfoliosModel instance() {
-		if (portfoliosInstanece == null) {
-			portfoliosInstanece = new PortfoliosModel();
-		}
-		return portfoliosInstanece;
-	}
-
-	private PortfoliosModel() {
+	public PortfoliosModel(PCollection collection) {
+		this.collection = collection;
 		portfolios = FXCollections.observableArrayList();
 		updatePortfoliosAll();
 	}
@@ -42,15 +35,8 @@ public class PortfoliosModel {
 	}
 
 	public void updatePortfoliosAll() {
-		List<Portfolio> portList;
-		try {
-			portList = MainApplication.getServiceFactory().getPortfolioService().findAll();
-			portfolios.clear();
-			portfolios.addAll(portList);
-		} catch (StockFxPersistenceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		portfolios.clear();
+		portfolios.addAll(collection.getPortfolioCollection());
 	}
 
 	public ObservableList<Portfolio> getPortfolios() {
@@ -61,7 +47,7 @@ public class PortfoliosModel {
 		this.portfolios = portfolios;
 	}
 
-	public void addPortfoliosListener(ListChangeListener listener) {
+	public void addPortfoliosListener(ListChangeListener<Portfolio> listener) {
 		portfolios.addListener(listener);
 	}
 
@@ -71,7 +57,11 @@ public class PortfoliosModel {
 
 	public void setSelected(Portfolio selected) {
 		this.selected = selected;
-		setSelectPortfolioNamePropertyText(selected.getName());
+		if (selected == null) {
+			setSelectPortfolioNamePropertyText("");
+		} else {
+			setSelectPortfolioNamePropertyText(selected.getName());
+		}
 	}
 
 	public StringProperty getSelectPortfolioNameProperty() {
@@ -89,34 +79,59 @@ public class PortfoliosModel {
 		getSelectPortfolioNameProperty().set(text);
 	}
 
-	public ObservableList<Stock> getPortfoliosStocks(Portfolio p) {
-		System.out.println("-> getPortfoliosStocks - they are:" + p.getobservableStocksInThisPortfolio());
-		return p.getobservableStocksInThisPortfolio();
+	private ObservableList<PortfolioStock> getPortfoliosStocks(Portfolio p) {
+		ObservableList<PortfolioStock> sList = MainApplication.getModelFactory().getStocksModel(p).getStocks();
+		System.out.println("-> getPCollectionsStocks - they are:" + sList);
+		return sList;
 	}
 
-	public ObservableList<Stock> getPortfoliosStocksForSelected() {
+	public ObservableList<PortfolioStock> getPortfoliosStocksForSelected() {
 		if (getSelected() == null) {
 			return null;
 		}
-		System.out.println("-> getPortfoliosStocksForSelected - they are:" + getSelected().getobservableStocksInThisPortfolio());
-		return getSelected().getobservableStocksInThisPortfolio();
+		System.out.println("-> getPCollectionsStocksForSelected - ...");
+		return getPortfoliosStocks(getSelected());
 	}
 
-	public void newPortfolio(String newPortfolioName, String type) throws StockFxPersistenceException {
+	// public ObservableList<Stock> getPortfoliosStocks(Portfolio p) {
+	// System.out.println("-> getPortfoliosStocks - they are:" + p.getobservableStocksInThisPortfolio());
+	// return p.getobservableStocksInThisPortfolio();
+	// }
+
+	// MOVE TO PortfolioAssociatedStock using lookup in map
+	// public ObservableList<Stock> getPortfoliosStocksForSelected() {
+	// if (getSelected() == null) {
+	// return null;
+	// }
+	// System.out.println("-> getPortfoliosStocksForSelected - they are:" +
+	// getSelected().getobservableStocksInThisPortfolio());
+	// return getSelected().getobservableStocksInThisPortfolio();
+	// }
+
+	/**
+	 * Create a new portfolio with the selected collection as its parent collection and persist.
+	 * @param newPortfolioName
+	 * @param type
+	 * @return the portfolio that is created
+	 * @throws StockFxPersistenceException
+	 */
+	public Portfolio newPortfolio(String newPortfolioName, PType type) throws StockFxPersistenceException {
 		Portfolio portfolio = new Portfolio(newPortfolioName, type);
+		portfolio.setCollectionid(MainApplication.getModelFactory().getCollectionsModel().getSelected());
 		MainApplication.getServiceFactory().getPortfolioService().create(portfolio);
 		updatePortfolioList(portfolio);
+		return portfolio;
 	}
 
-	public void addStockToSelectedPortfolio(Stock stock) throws StockFxPersistenceException, StockFxDuplicateDataException {
-		if (getSelected() != null) {
-			// EntityManager em = MainApplication.openTransaction();
-			// em.getTransaction().begin();
-			log.debug("Stock:" + stock);
-			MainApplication.getAppFactory().getCrudService().update(getSelected());
-			getSelected().addStock(stock);
-			MainApplication.databaseDebugPrintout();
-			// MainApplication.endTransaction(em);
-		}
-	}
+//	public void addStockToSelectedPortfolio(PortfolioStock stock) throws StockFxPersistenceException, StockFxDuplicateDataException {
+//		if (getSelected() != null) {
+//			// EntityManager em = MainApplication.openTransaction();
+//			// em.getTransaction().begin();
+//			log.debug("Stock:" + stock);
+//			getSelected().addPortfolioStock(stock);
+//			MainApplication.getAppFactory().getCrudService().update(getSelected());
+//			MainApplication.databaseDebugPrintout();
+//			// MainApplication.endTransaction(em);
+//		}
+//	}
 }

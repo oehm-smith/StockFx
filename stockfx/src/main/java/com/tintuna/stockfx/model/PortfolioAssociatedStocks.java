@@ -11,8 +11,8 @@ import com.tintuna.stockfx.application.MainApplication;
 import com.tintuna.stockfx.persistence.Portfolio;
 
 /**
- * @Entity Portfolios have @Entity Stocks. There is one model of @Entity Portfolios and its called Portfolios. Each @Entity
- *         Portfolio needs to be associated with a Model of its Stocks and that is the purpose of this.
+ * @Entity Portfolios have @Entity Stocks (1+). There is one model of @Entity Portfolios - PortfoliosModel; and there is
+ *         one StocksModel for each Portfolio. This class maintains the map mapping each Portfolio to a StocksModel
  * 
  * @author bsmith
  * 
@@ -33,10 +33,10 @@ public class PortfolioAssociatedStocks {
 	// TODO - this will probably fail when stock are added to portfolio in some other way
 	public static StocksModel getStockModelForAssociatedPortfolio(Portfolio portfolio) {
 		if (portfolioStocks.containsKey(portfolio.getName().toLowerCase())) {
-			log.debug("Return Stocks model for existing mapped portfolio: "+portfolio.getName());
+			log.debug("Return Stocks model for existing mapped portfolio: " + portfolio.getName());
 			return portfolioStocks.get(portfolio.getName().toLowerCase());
 		} else {
-			log.debug("Return NEW Stocks model for new mapped portfolio: "+portfolio.getName());
+			log.debug("Return NEW Stocks model for new mapped portfolio: " + portfolio.getName());
 			StocksModel s = new StocksModel(portfolio);
 			portfolioStocks.put(portfolio.getName().toLowerCase(), s);
 			return s;
