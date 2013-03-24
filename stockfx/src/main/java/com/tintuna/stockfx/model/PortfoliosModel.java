@@ -117,7 +117,7 @@ public class PortfoliosModel {
 	 */
 	public Portfolio newPortfolio(String newPortfolioName, PType type) throws StockFxPersistenceException {
 		Portfolio portfolio = new Portfolio(newPortfolioName, type);
-		portfolio.setCollectionid(MainApplication.getModelFactory().getCollectionsModel().getSelected());
+		portfolio.setCollection(MainApplication.getModelFactory().getCollectionsModel().getSelected());
 		MainApplication.getServiceFactory().getPortfolioService().create(portfolio);
 		updatePortfolioList(portfolio);
 		return portfolio;

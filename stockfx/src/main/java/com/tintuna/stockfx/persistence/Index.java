@@ -56,7 +56,7 @@ public class Index implements Serializable {
     private Double high;
     @JoinColumn(name = "Indexes_id", referencedColumnName = "id")
     @ManyToOne
-    private Indexes indexesid;
+    private Indexes indexes;
 
     public Index() {
     }
@@ -113,12 +113,12 @@ public class Index implements Serializable {
         this.high = high;
     }
 
-    public Indexes getIndexesid() {
-        return indexesid;
+    public Indexes getIndexes() {
+        return indexes;
     }
 
-    public void setIndexesid(Indexes indexesid) {
-        this.indexesid = indexesid;
+    public void setIndexes(Indexes indexesid) {
+        this.indexes = indexesid;
     }
 
     @Override

@@ -57,8 +57,8 @@ public class Portfolio implements Serializable {
 	private String hrnSrn;
 	@JoinColumn(name = "Collection_id", referencedColumnName = "id")
 	@ManyToOne
-	private PCollection collectionid;
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "portfolioid")
+	private PCollection collection;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "portfolio")
 	private Collection<PortfolioStock> portfoliostockCollection;
 
 	public Portfolio() {
@@ -93,11 +93,11 @@ public class Portfolio implements Serializable {
 		this.name = name;
 	}
 
-	public PType getPortfolioTypeid() {
+	public PType getPortfolioType() {
 		return portfolioType;
 	}
 
-	public void setPortfolioTypeid(PType portfolioType) {
+	public void setPortfolioType(PType portfolioType) {
 		this.portfolioType = portfolioType;
 	}
 
@@ -109,12 +109,12 @@ public class Portfolio implements Serializable {
 		this.hrnSrn = hrnSrn;
 	}
 
-	public PCollection getCollectionid() {
-		return collectionid;
+	public PCollection getCollection() {
+		return collection;
 	}
 
-	public void setCollectionid(PCollection collectionid) {
-		this.collectionid = collectionid;
+	public void setCollection(PCollection collectionid) {
+		this.collection = collectionid;
 	}
 
 	@XmlTransient

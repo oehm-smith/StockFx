@@ -27,10 +27,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "shevent")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Shevent.findAll", query = "SELECT s FROM Shevent s"),
-    @NamedQuery(name = "Shevent.findById", query = "SELECT s FROM Shevent s WHERE s.id = :id"),
-    @NamedQuery(name = "Shevent.findByEvent", query = "SELECT s FROM Shevent s WHERE s.event = :event")})
-public class Shevent implements Serializable {
+    @NamedQuery(name = "ShEvent.findAll", query = "SELECT s FROM ShEvent s"),
+    @NamedQuery(name = "ShEvent.findById", query = "SELECT s FROM ShEvent s WHERE s.id = :id"),
+    @NamedQuery(name = "ShEvent.findByEvent", query = "SELECT s FROM ShEvent s WHERE s.event = :event")})
+public class ShEvent implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,13 +38,13 @@ public class Shevent implements Serializable {
     private Integer id;
     @Column(name = "event")
     private String event;
-    @OneToMany(mappedBy = "sHEventid")
-    private Collection<Stockholding> stockholdingCollection;
+    @OneToMany(mappedBy = "sHEvent")
+    private Collection<StockHolding> stockholdingCollection;
 
-    public Shevent() {
+    public ShEvent() {
     }
 
-    public Shevent(Integer id) {
+    public ShEvent(Integer id) {
         this.id = id;
     }
 
@@ -65,11 +65,11 @@ public class Shevent implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Stockholding> getStockholdingCollection() {
+    public Collection<StockHolding> getStockholdingCollection() {
         return stockholdingCollection;
     }
 
-    public void setStockholdingCollection(Collection<Stockholding> stockholdingCollection) {
+    public void setStockholdingCollection(Collection<StockHolding> stockholdingCollection) {
         this.stockholdingCollection = stockholdingCollection;
     }
 
@@ -83,10 +83,10 @@ public class Shevent implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Shevent)) {
+        if (!(object instanceof ShEvent)) {
             return false;
         }
-        Shevent other = (Shevent) object;
+        ShEvent other = (ShEvent) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

@@ -60,7 +60,7 @@ public class Dividends implements Serializable {
     private Date cumdDate;
     @JoinColumn(name = "Stock_id", referencedColumnName = "id")
     @ManyToOne
-    private Stock stockid;
+    private Stock stock;
 
     public Dividends() {
     }
@@ -123,12 +123,12 @@ public class Dividends implements Serializable {
         this.cumdDate = cumdDate;
     }
 
-    public Stock getStockid() {
-        return stockid;
+    public Stock getStock() {
+        return stock;
     }
 
-    public void setStockid(Stock stockid) {
-        this.stockid = stockid;
+    public void setStock(Stock stockid) {
+        this.stock = stockid;
     }
 
     @Override

@@ -106,7 +106,7 @@ public class StocksModel {
 	public PortfolioStock newStock(String symbol, String company) throws StockFxPersistenceException {
 		Stock s = new Stock(symbol, company);
 		PortfolioStock portfolioStock = new PortfolioStock();
-		portfolioStock.setStockid(s);
+		portfolioStock.setStock(s);
 		// s.setPortfoliostock(pstock); - don't need to do this as mappedby annotation arg is on the stock
 		MainApplication.getServiceFactory().getStockService().create(s);
 		MainApplication.getServiceFactory().getPortfoliostockService().create(portfolioStock);
@@ -118,15 +118,15 @@ public class StocksModel {
 	public void addStockToSelectedPortfolio(PortfolioStock portfolioStock) throws StockFxPersistenceException {
 		Portfolio portfolio = MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelected();
 		// JPA 'mappedBy' adds the portfolioStock to the Collection on the Portfolio entity
-		portfolioStock.setPortfolioid(portfolio);
+		portfolioStock.setPortfolio(portfolio);
 		MainApplication.getServiceFactory().getPortfoliostockService().update(portfolioStock);
 		log.debug("addStockToSelectedPortfolio - portfolioStock:" + portfolioStock + ", portfolio:" + portfolio);
 	}
 
 	public void updateSelected(String symbol, String company) throws StockFxPersistenceException {
-		getSelected().getStockid().setSymbol(symbol);
-		getSelected().getStockid().setCompanyName(company);
-		MainApplication.getServiceFactory().getStockService().update(getSelected().getStockid());
+		getSelected().getStock().setSymbol(symbol);
+		getSelected().getStock().setCompanyName(company);
+		MainApplication.getServiceFactory().getStockService().update(getSelected().getStock());
 	}
 
 }

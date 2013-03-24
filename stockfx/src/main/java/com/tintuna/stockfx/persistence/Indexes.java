@@ -43,11 +43,11 @@ public class Indexes implements Serializable {
     private String url;
     @Column(name = "name")
     private String name;
-    @OneToMany(mappedBy = "indexesid")
+    @OneToMany(mappedBy = "indexes")
     private Collection<Index> indexCollection;
     @JoinColumn(name = "Exchange_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Exchange exchangeid;
+    private Exchange exchange;
 
     public Indexes() {
     }
@@ -89,12 +89,12 @@ public class Indexes implements Serializable {
         this.indexCollection = indexCollection;
     }
 
-    public Exchange getExchangeid() {
-        return exchangeid;
+    public Exchange getExchange() {
+        return exchange;
     }
 
-    public void setExchangeid(Exchange exchangeid) {
-        this.exchangeid = exchangeid;
+    public void setExchange(Exchange exchangeid) {
+        this.exchange = exchangeid;
     }
 
     @Override

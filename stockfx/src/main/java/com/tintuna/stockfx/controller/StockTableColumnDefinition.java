@@ -20,7 +20,7 @@ public class StockTableColumnDefinition extends LinkedHashMap<String, Callback<C
 				return new ObservableValueBase<String>() {
 					@Override
 					public String getValue() {
-						return portfolioStock.getValue().getStockid().getSymbol();
+						return portfolioStock.getValue().getStock().getSymbol();
 					}
 				};
 			}
@@ -32,7 +32,7 @@ public class StockTableColumnDefinition extends LinkedHashMap<String, Callback<C
 				return new ObservableValueBase<String>() {
 					@Override
 					public String getValue() {
-						return portfolioStock.getValue().getStockid().getCompanyName();
+						return portfolioStock.getValue().getStock().getCompanyName();
 					}
 				};
 			}

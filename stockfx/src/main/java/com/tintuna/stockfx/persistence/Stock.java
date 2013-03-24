@@ -44,10 +44,10 @@ public class Stock implements Serializable {
 	private String url;
 	private Collection<Other> otherCollection;
 	private Collection<Morningstar> morningstarCollection;
-	private Collection<Pricehistory> pricehistoryCollection;
+	private Collection<PriceHistory> pricehistoryCollection;
 	private Collection<Dividends> dividendsCollection;
-	private Exchange exchangeid;
-	private Collection<Motleyfool> motleyfoolCollection;
+	private Exchange exchange;
+	private Collection<MotleyFool> motleyfoolCollection;
 	private PortfolioStock portfoliostock;
 
 	public Stock() {
@@ -124,7 +124,7 @@ public class Stock implements Serializable {
 	}
 
 	@XmlTransient
-	@OneToMany(mappedBy = "stockid")
+	@OneToMany(mappedBy = "stock")
 	public Collection<Other> getOtherCollection() {
 		return otherCollection;
 	}
@@ -134,7 +134,7 @@ public class Stock implements Serializable {
 	}
 
 	@XmlTransient
-	@OneToMany(mappedBy = "stockid")
+	@OneToMany(mappedBy = "stock")
 	public Collection<Morningstar> getMorningstarCollection() {
 		return morningstarCollection;
 	}
@@ -144,17 +144,17 @@ public class Stock implements Serializable {
 	}
 
 	@XmlTransient
-	@OneToMany(mappedBy = "stockid")
-	public Collection<Pricehistory> getPricehistoryCollection() {
+	@OneToMany(mappedBy = "stock")
+	public Collection<PriceHistory> getPricehistoryCollection() {
 		return pricehistoryCollection;
 	}
 
-	public void setPricehistoryCollection(Collection<Pricehistory> pricehistoryCollection) {
+	public void setPricehistoryCollection(Collection<PriceHistory> pricehistoryCollection) {
 		this.pricehistoryCollection = pricehistoryCollection;
 	}
 
 	@XmlTransient
-	@OneToMany(mappedBy = "stockid")
+	@OneToMany(mappedBy = "stock")
 	public Collection<Dividends> getDividendsCollection() {
 		return dividendsCollection;
 	}
@@ -165,25 +165,25 @@ public class Stock implements Serializable {
 
 	@JoinColumn(name = "Exchange_id", referencedColumnName = "id")
 	@OneToOne
-	public Exchange getExchangeid() {
-		return exchangeid;
+	public Exchange getExchange() {
+		return exchange;
 	}
 
-	public void setExchangeid(Exchange exchangeid) {
-		this.exchangeid = exchangeid;
+	public void setExchange(Exchange exchangeid) {
+		this.exchange = exchangeid;
 	}
 
 	@XmlTransient
-	@OneToMany(mappedBy = "stockid")
-	public Collection<Motleyfool> getMotleyfoolCollection() {
+	@OneToMany(mappedBy = "stock")
+	public Collection<MotleyFool> getMotleyfoolCollection() {
 		return motleyfoolCollection;
 	}
 
-	public void setMotleyfoolCollection(Collection<Motleyfool> motleyfoolCollection) {
+	public void setMotleyfoolCollection(Collection<MotleyFool> motleyfoolCollection) {
 		this.motleyfoolCollection = motleyfoolCollection;
 	}
 
-	@OneToOne(mappedBy = "stockid")
+	@OneToOne(mappedBy = "stock")
 	public PortfolioStock getPortfoliostock() {
 		return portfoliostock;
 	}

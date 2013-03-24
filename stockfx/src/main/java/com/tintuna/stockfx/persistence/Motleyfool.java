@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "motleyfool")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Motleyfool.findAll", query = "SELECT m FROM Motleyfool m"),
-    @NamedQuery(name = "Motleyfool.findById", query = "SELECT m FROM Motleyfool m WHERE m.id = :id"),
-    @NamedQuery(name = "Motleyfool.findByDate", query = "SELECT m FROM Motleyfool m WHERE m.date = :date"),
-    @NamedQuery(name = "Motleyfool.findByMfInfoTbd", query = "SELECT m FROM Motleyfool m WHERE m.mfInfoTbd = :mfInfoTbd")})
-public class Motleyfool implements Serializable {
+    @NamedQuery(name = "MotleyFool.findAll", query = "SELECT m FROM MotleyFool m"),
+    @NamedQuery(name = "MotleyFool.findById", query = "SELECT m FROM MotleyFool m WHERE m.id = :id"),
+    @NamedQuery(name = "MotleyFool.findByDate", query = "SELECT m FROM MotleyFool m WHERE m.date = :date"),
+    @NamedQuery(name = "MotleyFool.findByMfInfoTbd", query = "SELECT m FROM MotleyFool m WHERE m.mfInfoTbd = :mfInfoTbd")})
+public class MotleyFool implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,12 +42,12 @@ public class Motleyfool implements Serializable {
     private String mfInfoTbd;
     @JoinColumn(name = "Stock_id", referencedColumnName = "id")
     @ManyToOne
-    private Stock stockid;
+    private Stock stock;
 
-    public Motleyfool() {
+    public MotleyFool() {
     }
 
-    public Motleyfool(Integer id) {
+    public MotleyFool(Integer id) {
         this.id = id;
     }
 
@@ -75,12 +75,12 @@ public class Motleyfool implements Serializable {
         this.mfInfoTbd = mfInfoTbd;
     }
 
-    public Stock getStockid() {
-        return stockid;
+    public Stock getStock() {
+        return stock;
     }
 
-    public void setStockid(Stock stockid) {
-        this.stockid = stockid;
+    public void setStock(Stock stockid) {
+        this.stock = stockid;
     }
 
     @Override
@@ -93,10 +93,10 @@ public class Motleyfool implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Motleyfool)) {
+        if (!(object instanceof MotleyFool)) {
             return false;
         }
-        Motleyfool other = (Motleyfool) object;
+        MotleyFool other = (MotleyFool) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

@@ -44,13 +44,13 @@ public class PortfolioStock implements Serializable, Comparable {
     private String hrnSrn;
     @JoinColumn(name = "Stock_id", referencedColumnName = "id")
     @OneToOne(optional = false)
-    private Stock stockid;
+    private Stock stock;
     @JoinColumn(name = "StockHolding_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Stockholding stockHoldingid;
+    private StockHolding stockHolding;
     @JoinColumn(name = "Portfolio_id", referencedColumnName = "id")
     @ManyToOne(optional = false, cascade=CascadeType.ALL)
-    private Portfolio portfolioid;
+    private Portfolio portfolio;
 
     public PortfolioStock() {
     }
@@ -83,28 +83,28 @@ public class PortfolioStock implements Serializable, Comparable {
         this.hrnSrn = hrnSrn;
     }
 
-    public Stock getStockid() {
-        return stockid;
+    public Stock getStock() {
+        return stock;
     }
 
-    public void setStockid(Stock stockid) {
-        this.stockid = stockid;
+    public void setStock(Stock stockid) {
+        this.stock = stockid;
     }
 
-    public Stockholding getStockHoldingid() {
-        return stockHoldingid;
+    public StockHolding getStockHolding() {
+        return stockHolding;
     }
 
-    public void setStockHoldingid(Stockholding stockHoldingid) {
-        this.stockHoldingid = stockHoldingid;
+    public void setStockHolding(StockHolding stockHoldingid) {
+        this.stockHolding = stockHoldingid;
     }
 
-    public Portfolio getPortfolioid() {
-        return portfolioid;
+    public Portfolio getPortfolio() {
+        return portfolio;
     }
 
-    public void setPortfolioid(Portfolio portfolioid) {
-        this.portfolioid = portfolioid;
+    public void setPortfolio(Portfolio portfolioid) {
+        this.portfolio = portfolioid;
     }
 
     @Override
@@ -129,14 +129,14 @@ public class PortfolioStock implements Serializable, Comparable {
 
     @Override
     public String toString() {
-        return String.format("Portfoliostock[ id=%d, drp=%d, hin=%s, stock - %s, portfolios: %s", id, drp, hrnSrn, portfolioid, stockid);
+        return String.format("Portfoliostock[ id=%d, drp=%d, hin=%s, stock - %s, portfolios: %s", id, drp, hrnSrn, portfolio, stock);
     }
 
     @Override
 	public int compareTo(Object obj) {
 		if (obj instanceof PortfolioStock) {
 			PortfolioStock s = (PortfolioStock) obj;
-			return ((s.getStockid().getSymbol() + s.getStockid().getCompanyName()).compareTo((this.getStockid().getSymbol() + this.getStockid().getCompanyName())));
+			return ((s.getStock().getSymbol() + s.getStock().getCompanyName()).compareTo((this.getStock().getSymbol() + this.getStock().getCompanyName())));
 		} else {
 			return -1;
 		}

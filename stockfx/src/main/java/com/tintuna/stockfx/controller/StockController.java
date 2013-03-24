@@ -76,8 +76,8 @@ public class StockController extends StockFxBorderPaneController {
 	@Override
 	public void loadSelectedEntity() {
 		PortfolioStock pc = MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio().getSelected();
-		newStockSymbolText.textProperty().set(pc.getStockid().getSymbol());
-		newStockCompanyText.textProperty().set(pc.getStockid().getCompanyName());
+		newStockSymbolText.textProperty().set(pc.getStock().getSymbol());
+		newStockCompanyText.textProperty().set(pc.getStock().getCompanyName());
 		selectedId = pc.getId();
 	}
 

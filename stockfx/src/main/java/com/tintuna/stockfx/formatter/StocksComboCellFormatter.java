@@ -16,7 +16,7 @@ public class StocksComboCellFormatter extends ListCell<PortfolioStock> {
 
 		if (portfolioStock == null) {
 		} else {
-			setText(portfolioStock.getStockid().getSymbol() + " - " + portfolioStock.getStockid().getCompanyName());
+			setText(portfolioStock.getStock().getSymbol() + " - " + portfolioStock.getStock().getCompanyName());
 			setTextFill(Color.BLACK);
 		}
 	}

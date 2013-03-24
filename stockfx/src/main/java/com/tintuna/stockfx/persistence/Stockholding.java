@@ -34,13 +34,13 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "stockholding")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Stockholding.findAll", query = "SELECT s FROM Stockholding s"),
-    @NamedQuery(name = "Stockholding.findById", query = "SELECT s FROM Stockholding s WHERE s.id = :id"),
-    @NamedQuery(name = "Stockholding.findByDate", query = "SELECT s FROM Stockholding s WHERE s.date = :date"),
-    @NamedQuery(name = "Stockholding.findByTransaction", query = "SELECT s FROM Stockholding s WHERE s.transaction = :transaction"),
-    @NamedQuery(name = "Stockholding.findByBrokeridge", query = "SELECT s FROM Stockholding s WHERE s.brokeridge = :brokeridge"),
-    @NamedQuery(name = "Stockholding.findByTax", query = "SELECT s FROM Stockholding s WHERE s.tax = :tax")})
-public class Stockholding implements Serializable {
+    @NamedQuery(name = "StockHolding.findAll", query = "SELECT s FROM StockHolding s"),
+    @NamedQuery(name = "StockHolding.findById", query = "SELECT s FROM StockHolding s WHERE s.id = :id"),
+    @NamedQuery(name = "StockHolding.findByDate", query = "SELECT s FROM StockHolding s WHERE s.date = :date"),
+    @NamedQuery(name = "StockHolding.findByTransaction", query = "SELECT s FROM StockHolding s WHERE s.transaction = :transaction"),
+    @NamedQuery(name = "StockHolding.findByBrokeridge", query = "SELECT s FROM StockHolding s WHERE s.brokeridge = :brokeridge"),
+    @NamedQuery(name = "StockHolding.findByTax", query = "SELECT s FROM StockHolding s WHERE s.tax = :tax")})
+public class StockHolding implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,18 +59,18 @@ public class Stockholding implements Serializable {
     private Double tax;
     @JoinColumn(name = "SHEvent_id", referencedColumnName = "id")
     @ManyToOne
-    private Shevent sHEventid;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stockHoldingid")
+    private ShEvent sHEvent;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stockHolding")
     private Collection<PortfolioStock> portfoliostockCollection;
 
-    public Stockholding() {
+    public StockHolding() {
     }
 
-    public Stockholding(Integer id) {
+    public StockHolding(Integer id) {
         this.id = id;
     }
 
-    public Stockholding(Integer id, Date date) {
+    public StockHolding(Integer id, Date date) {
         this.id = id;
         this.date = date;
     }
@@ -115,12 +115,12 @@ public class Stockholding implements Serializable {
         this.tax = tax;
     }
 
-    public Shevent getSHEventid() {
-        return sHEventid;
+    public ShEvent getSHEvent() {
+        return sHEvent;
     }
 
-    public void setSHEventid(Shevent sHEventid) {
-        this.sHEventid = sHEventid;
+    public void setSHEvent(ShEvent sHEventid) {
+        this.sHEvent = sHEventid;
     }
 
     @XmlTransient
@@ -142,10 +142,10 @@ public class Stockholding implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Stockholding)) {
+        if (!(object instanceof StockHolding)) {
             return false;
         }
-        Stockholding other = (Stockholding) object;
+        StockHolding other = (StockHolding) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

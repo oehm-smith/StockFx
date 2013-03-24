@@ -40,9 +40,9 @@ public class Exchange implements Serializable {
     private Integer id;
     @Column(name = "name")
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "exchangeid")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "exchange")
     private Collection<Indexes> indexesCollection;
-    @OneToOne(mappedBy = "exchangeid")
+    @OneToOne(mappedBy = "exchange")
     private Stock stock;
 
     public Exchange() {

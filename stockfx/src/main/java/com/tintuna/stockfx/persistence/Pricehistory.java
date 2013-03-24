@@ -29,15 +29,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "pricehistory")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Pricehistory.findAll", query = "SELECT p FROM Pricehistory p"),
-    @NamedQuery(name = "Pricehistory.findById", query = "SELECT p FROM Pricehistory p WHERE p.id = :id"),
-    @NamedQuery(name = "Pricehistory.findByDate", query = "SELECT p FROM Pricehistory p WHERE p.date = :date"),
-    @NamedQuery(name = "Pricehistory.findByOpen", query = "SELECT p FROM Pricehistory p WHERE p.open = :open"),
-    @NamedQuery(name = "Pricehistory.findByClose", query = "SELECT p FROM Pricehistory p WHERE p.close = :close"),
-    @NamedQuery(name = "Pricehistory.findByLow", query = "SELECT p FROM Pricehistory p WHERE p.low = :low"),
-    @NamedQuery(name = "Pricehistory.findByHigh", query = "SELECT p FROM Pricehistory p WHERE p.high = :high"),
-    @NamedQuery(name = "Pricehistory.findByVolume", query = "SELECT p FROM Pricehistory p WHERE p.volume = :volume")})
-public class Pricehistory implements Serializable {
+    @NamedQuery(name = "PriceHistory.findAll", query = "SELECT p FROM PriceHistory p"),
+    @NamedQuery(name = "PriceHistory.findById", query = "SELECT p FROM PriceHistory p WHERE p.id = :id"),
+    @NamedQuery(name = "PriceHistory.findByDate", query = "SELECT p FROM PriceHistory p WHERE p.date = :date"),
+    @NamedQuery(name = "PriceHistory.findByOpen", query = "SELECT p FROM PriceHistory p WHERE p.open = :open"),
+    @NamedQuery(name = "PriceHistory.findByClose", query = "SELECT p FROM PriceHistory p WHERE p.close = :close"),
+    @NamedQuery(name = "PriceHistory.findByLow", query = "SELECT p FROM PriceHistory p WHERE p.low = :low"),
+    @NamedQuery(name = "PriceHistory.findByHigh", query = "SELECT p FROM PriceHistory p WHERE p.high = :high"),
+    @NamedQuery(name = "PriceHistory.findByVolume", query = "SELECT p FROM PriceHistory p WHERE p.volume = :volume")})
+public class PriceHistory implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,12 +59,12 @@ public class Pricehistory implements Serializable {
     private String volume;
     @JoinColumn(name = "Stock_id", referencedColumnName = "id")
     @ManyToOne
-    private Stock stockid;
+    private Stock stock;
 
-    public Pricehistory() {
+    public PriceHistory() {
     }
 
-    public Pricehistory(Integer id) {
+    public PriceHistory(Integer id) {
         this.id = id;
     }
 
@@ -124,12 +124,12 @@ public class Pricehistory implements Serializable {
         this.volume = volume;
     }
 
-    public Stock getStockid() {
-        return stockid;
+    public Stock getStock() {
+        return stock;
     }
 
-    public void setStockid(Stock stockid) {
-        this.stockid = stockid;
+    public void setStock(Stock stockid) {
+        this.stock = stockid;
     }
 
     @Override
@@ -142,10 +142,10 @@ public class Pricehistory implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Pricehistory)) {
+        if (!(object instanceof PriceHistory)) {
             return false;
         }
-        Pricehistory other = (Pricehistory) object;
+        PriceHistory other = (PriceHistory) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

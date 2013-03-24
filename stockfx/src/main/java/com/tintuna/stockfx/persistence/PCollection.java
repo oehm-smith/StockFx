@@ -37,7 +37,7 @@ public class PCollection implements Serializable {
 	@Basic(optional = false)
 	@Column(name = "name")
 	private String name;
-	@OneToMany(mappedBy = "collectionid")
+	@OneToMany(mappedBy = "collection")
     private Collection<Portfolio> portfolioCollection;
 
 	public PCollection() {

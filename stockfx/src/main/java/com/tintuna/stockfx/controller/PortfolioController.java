@@ -61,7 +61,7 @@ public class PortfolioController extends StockFxBorderPaneController {
 		log.debug("-> loadSelected - selected portfolio:" + p);
 		if (p != null) {
 			newPortfolioText.textProperty().set(p.getName());
-			typeList.getSelectionModel().select(p.getPortfolioTypeid());
+			typeList.getSelectionModel().select(p.getPortfolioType());
 			setControllerState(CONTROLLER_STATE.OPENED_DOCUMENT);
 		}
 	}

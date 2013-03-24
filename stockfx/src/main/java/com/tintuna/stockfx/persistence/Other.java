@@ -34,7 +34,7 @@ public class Other implements Serializable {
     private Integer id;
     @JoinColumn(name = "Stock_id", referencedColumnName = "id")
     @ManyToOne
-    private Stock stockid;
+    private Stock stock;
 
     public Other() {
     }
@@ -51,12 +51,12 @@ public class Other implements Serializable {
         this.id = id;
     }
 
-    public Stock getStockid() {
-        return stockid;
+    public Stock getStock() {
+        return stock;
     }
 
-    public void setStockid(Stock stockid) {
-        this.stockid = stockid;
+    public void setStock(Stock stockid) {
+        this.stock = stockid;
     }
 
     @Override
