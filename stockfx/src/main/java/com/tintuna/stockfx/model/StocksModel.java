@@ -38,6 +38,8 @@ public class StocksModel {
 	}
 
 	public void updateStockList(PortfolioStock s) {
+		log.debug("updateStockList - PortfolioStock:" + s);
+		getStocks();	// todo - this can be removed - its just here to print the debug in getStocks()
 		stocks.add(s);
 	}
 
@@ -48,7 +50,7 @@ public class StocksModel {
 	}
 
 	public ObservableList<PortfolioStock> getStocks() {
-		log.debug(String.format("getStocks - StockTable's items: %s",stocks)); 
+		log.debug(String.format("getStocks - StockTable's items: %s", stocks));
 
 		return stocks;
 	}
@@ -66,10 +68,10 @@ public class StocksModel {
 	public ObservableList<PortfolioStock> getDifferenceStocks() throws StockFxPersistenceException {
 		Set<PortfolioStock> allStocks;
 		allStocks = new TreeSet<>(MainApplication.getServiceFactory().getPortfoliostockService().findAll());
-		log.debug("All Stocks:" + allStocks);
-		log.debug("Port Stocks:" + getStocks());
+		log.debug(String.format("All Stocks (# items: %d):%s", allStocks.size(), allStocks));
+		log.debug(String.format("Port Stocks (# items: %d):%s", getStocks().size(), getStocks()));
 		allStocks.removeAll(getStocks());
-		log.debug("Difference:" + allStocks);
+		log.debug(String.format("Difference (# items: %d):%s", allStocks.size(), allStocks));
 		return FXCollections.observableArrayList(allStocks);
 	}
 
@@ -82,11 +84,10 @@ public class StocksModel {
 	}
 
 	public void setSelected(PortfolioStock selectedStock) {
-		log.debug("-> setSelected: "+selectedStock);
-		if (selectedStock == null) {
-			throw new StockFxException("selectedStock == null");
+		log.debug("-> setSelected: " + selectedStock);
+		if (selectedStock != null) {
+			this.selectedStock = selectedStock;
 		}
-		this.selectedStock = selectedStock;
 	}
 
 	// public ObservableList<Portfolio> getStocksPortfolios(Stock s) {
@@ -106,20 +107,20 @@ public class StocksModel {
 		Stock s = new Stock(symbol, company);
 		PortfolioStock portfolioStock = new PortfolioStock();
 		portfolioStock.setStockid(s);
-//		s.setPortfoliostock(pstock); - don't need to do this as mappedby annotation arg is on the stock
+		// s.setPortfoliostock(pstock); - don't need to do this as mappedby annotation arg is on the stock
 		MainApplication.getServiceFactory().getStockService().create(s);
 		MainApplication.getServiceFactory().getPortfoliostockService().create(portfolioStock);
 		updateStockList(portfolioStock);
-		log.debug(String.format("newStock - %s, %s - portfolioStock: %s - stockList: %s",symbol,company,portfolioStock,getStocks()));
+		log.debug(String.format("newStock - %s, %s - portfolioStock: %s - stockList: %s", symbol, company, portfolioStock, getStocks()));
 		return portfolioStock;
 	}
-	
+
 	public void addStockToSelectedPortfolio(PortfolioStock portfolioStock) throws StockFxPersistenceException {
 		Portfolio portfolio = MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelected();
 		// JPA 'mappedBy' adds the portfolioStock to the Collection on the Portfolio entity
 		portfolioStock.setPortfolioid(portfolio);
 		MainApplication.getServiceFactory().getPortfoliostockService().update(portfolioStock);
-		log.debug("addStockToSelectedPortfolio - portfolioStock:"+portfolioStock+", portfolio:"+portfolio);
+		log.debug("addStockToSelectedPortfolio - portfolioStock:" + portfolioStock + ", portfolio:" + portfolio);
 	}
 
 	public void updateSelected(String symbol, String company) throws StockFxPersistenceException {

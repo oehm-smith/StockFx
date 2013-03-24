@@ -47,16 +47,20 @@ public class Crud {
 		factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
 	}
 
-	private void beginTransacgtion() {
+	private void beginTransacgtion() throws StockFxPersistenceException {
 		// log.debug("Factory open:" + factory.isOpen());
 		// if (Persistence.getPersistenceUtil().isLoaded(factory)) {
 		// log.debug(PERSISTENCE_UNIT_NAME + " is loaded");
 		// } else {
 		// log.debug(PERSISTENCE_UNIT_NAME + " is NOT loaded");
 		// }
-		em = factory.createEntityManager();
-		// log.debug("em:" + em.isOpen());
-		em.getTransaction().begin();
+		try {
+			em = factory.createEntityManager();
+			// log.debug("em:" + em.isOpen());
+			em.getTransaction().begin();
+		} catch (PersistenceException e) {
+			throw new StockFxPersistenceException("Is the application / database already open?  "+ e.getMessage());
+		}
 	}
 
 	private String getDbLocation() throws FileNotFoundException {

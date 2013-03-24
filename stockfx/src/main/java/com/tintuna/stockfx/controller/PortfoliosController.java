@@ -171,6 +171,7 @@ public class PortfoliosController extends StockFxBorderPaneController {
 						MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().setSelected(null);
 						newPortfolioButton.setDisable(false);
 						portfoliosSubController.setPortfolioItemsFromSelectedCollection();
+						openCollectionButton.setDisable(false);
 					}
 				}
 			});
@@ -225,6 +226,7 @@ public class PortfoliosController extends StockFxBorderPaneController {
 					openCollectionButtonAction();
 				}
 			});
+			openCollectionButton.setDisable(true);
 		}
 
 		private void openCollectionButtonAction() {

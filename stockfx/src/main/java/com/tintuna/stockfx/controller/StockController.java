@@ -12,6 +12,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.InputMethodEvent;
 import javafx.util.Callback;
 
 import org.slf4j.Logger;
@@ -44,6 +46,10 @@ public class StockController extends StockFxBorderPaneController {
 	@FXML
 	private TextField newStockCompanyText;
 
+	public StockController() {
+		log.debug("-> NEW StockController");
+	}
+
 	@Override
 	protected String getFXML() {
 		return "/fxml/Stock.fxml";
@@ -54,12 +60,14 @@ public class StockController extends StockFxBorderPaneController {
 		initializeAddToPortfolioButton();
 		initializeNewStockButton();
 		initializeSaveButton();
+		disEnableButtonsForSaveOrNew();
 	}
 
 	@Override
 	protected void initializeFields() {
 		initializePortfolioNameLabel();
 		initializeStockCombo();
+		initializeNewStockFields();
 	}
 
 	/**
@@ -74,66 +82,80 @@ public class StockController extends StockFxBorderPaneController {
 	}
 
 	/**
-	 * The complement of loading the selected is that we want to clear out any existing values.
+	 * The complement of loading the selected is that we want to clear out any existing values for saving a new one.
 	 */
 	@Override
 	public void clearCurrentEntity() {
 		newStockSymbolText.textProperty().set("");
 		newStockCompanyText.textProperty().set("");
 		selectedId = NOTHING_SELECTED_ID;
+		// And load up the combo
+		initializeStocksComboData();
 	}
 
 	private void initializePortfolioNameLabel() {
-		// portfolioNameLabel.setText(MainApplication.getModelFactory().getPortfolios().getSelected().getName());
 		portfolioNameLabel.textProperty().bind(MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelectPortfolioNameProperty());
 	}
 
 	private void initializeStockCombo() {
-		initializestocksComboData();
+		// Handle when item selected in combo list changes
 		stocksCombo.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<PortfolioStock>() {
 			@Override
 			public void changed(ObservableValue<? extends PortfolioStock> arg0, PortfolioStock arg1, PortfolioStock arg2) {
-				MainApplication.getModelFactory().getStocksModel(MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelected()).setSelected(
-						stocksCombo.getSelectionModel().getSelectedItem());
+				log.debug(String.format("Stock Combo on change - from %s to %s", arg1, arg2));
+				MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio().setSelected(arg2);// stocksCombo.getSelectionModel().getSelectedItem());
+				if (stocksCombo.getSelectionModel().getSelectedIndex() >= 0) {
+					addToPortfolioButton.setDisable(false);
+				}
+				newStockButton.setDisable(true);
+				saveButton.setDisable(true);
 			}
 		});
+		// Set how combo list is displayed
 		stocksCombo.setCellFactory(new Callback<ListView<PortfolioStock>, ListCell<PortfolioStock>>() {
 
 			@Override
 			public ListCell<PortfolioStock> call(ListView<PortfolioStock> arg0) {
-				// TODO Auto-generated method stub
 				return new StocksComboCellFormatter();
 			}
 		});
+		// Set how the combo when list not showing (it is actually a button) is displayed
 		stocksCombo.setButtonCell(new StocksComboCellFormatter());
+		// And add the data to it
+		// initializeStocksComboData(); - this will happen when loadSelectedEntity() or newEntity() is called
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void initializestocksComboData() {
-		MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().addPortfoliosListener(new ListChangeListener() {
-
+	private void initializeStocksComboData() {
+		// This more a change for if and when multiple users so that when one changes the list of stocks, the new list is reflected
+		MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio().addStocksListener(new ListChangeListener<PortfolioStock>() {
 			@SuppressWarnings("rawtypes")
 			@Override
 			public void onChanged(javafx.collections.ListChangeListener.Change c) {
 				stocksComboDataPopulate();
+				addToPortfolioButton.setDisable(false);
+				newStockButton.setDisable(true);
+				saveButton.setDisable(true);
 			}
-
 		});
-		// stocksCombo.setItems(MainApplication.getModelFactory().getStocksModel(MainApplication.getModelFactory().getPortfoliosModel().getSelected()).getDifferenceStocks());
 		stocksComboDataPopulate();
-		stocksCombo.getSelectionModel().selectFirst();
-		PortfolioStock selected = null;
+		selectFirst();
+
+	}
+
+	private void selectFirst() {
+		log.debug("selectFirst");
 		if (stocksCombo.getItems().size() > 0) {
-			selected = stocksCombo.getItems().get(0);
+			log.debug("  > 0 items in combo");
+			stocksCombo.getSelectionModel().selectFirst();
+			stocksCombo.setValue(stocksCombo.getItems().get(0));
 		}
-		// TODO - this isn't doing what Im expecting - to highlight the first one in the list, or is it to highlight the
-		// one that IS THE SELECTED
-		// MainApplication.getModelFactory().getStocksModel(MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelected()).setSelected(selected);
 	}
 
 	private void stocksComboDataPopulate() {
+		log.debug("-> stocksComboDataPopulate");
 		try {
-			stocksCombo.setItems(MainApplication.getModelFactory().getStocksModel(MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelected()).getDifferenceStocks());
+			stocksCombo.setItems(MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio().getDifferenceStocks());
 		} catch (StockFxPersistenceException e) {
 			// TODO - this not actually correct since don't actually know getting from database
 			String msg = "Error retrieving PortfolioStock from database - Error #001";
@@ -141,6 +163,42 @@ public class StockController extends StockFxBorderPaneController {
 			e.printStackTrace();
 			MainApplication.setMessage(msg);
 		}
+	}
+
+	private void initializeNewStockFields() {
+		newStockSymbolText.addEventHandler(InputMethodEvent.ANY, new EventHandler<InputEvent>() {
+			@Override
+			public void handle(InputEvent event) {
+				// All events still seem to be captured
+				if (event.getEventType().equals(InputMethodEvent.INPUT_METHOD_TEXT_CHANGED)) {
+					log.debug(String.format("newStockSymbolText eventHandler - eventType:%s", event, event.getEventType()));
+					disEnableButtonsForSaveOrNew();
+				}
+			}
+		});
+		newStockCompanyText.addEventHandler(InputMethodEvent.ANY, new EventHandler<InputEvent>() {
+			@Override
+			public void handle(InputEvent event) {
+				// All events still seem to be captured
+				if (event.getEventType().equals(InputMethodEvent.INPUT_METHOD_TEXT_CHANGED)) {
+					log.debug(String.format("newStockCompanyText eventHandler - eventType:%s", event, event.getEventType()));
+					disEnableButtonsForSaveOrNew();
+				}
+			}
+		});
+	}
+
+	protected void disEnableButtonsForSaveOrNew() {
+		log.debug(String.format("disEnableButtonsForSaveOrNew - getControllerState():%s", getControllerState()));
+		CONTROLLER_STATE cs = getControllerState();
+		// If in the 'started' state hide both buttons (they sit over the top of each other so can only show one or the
+		// other)
+		newStockButton.setDisable(cs != CONTROLLER_STATE.NEW_DOCUMENT);
+		newStockButton.setVisible(cs == CONTROLLER_STATE.NEW_DOCUMENT);// && cs != CONTROLLER_STATE.STARTED);
+		saveButton.setDisable(cs != CONTROLLER_STATE.OPENED_DOCUMENT);
+		saveButton.setVisible(cs == CONTROLLER_STATE.OPENED_DOCUMENT);// || cs != CONTROLLER_STATE.STARTED);
+
+		addToPortfolioButton.setDisable(true);
 	}
 
 	// TODO - 19/3/13 - fix this,
@@ -151,19 +209,20 @@ public class StockController extends StockFxBorderPaneController {
 			@Override
 			public void handle(Event arg0) {
 				addStockToSelectedPortfolioPopulate();
-				MainApplication.getAppFactory().getTabManager().selectTab(TabStandardNames.Portfolio.name());
+				MainApplication.getAppFactory().getTabManager().selectTab(TabStandardNames.Portfolios.name());
 			}
 
 		});
+		// addToPortfolioButton.setDisable(true);
 	}
 
 	private void addStockToSelectedPortfolioPopulate() {
-		PortfolioStock selectedPortfolioStock = MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio().getSelected();
 		Portfolio selectedPortfolio = MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelected();
-
 		StocksModel stockModel = MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio();
+		PortfolioStock selectedPortfolioStock = stockModel.getSelected();
 		try {
 			stockModel.addStockToSelectedPortfolio(selectedPortfolioStock);
+			stockModel.updateStockList(selectedPortfolioStock);
 		} catch (StockFxPersistenceException e) {
 			String msg = String.format("Error adding stock '%s' from database to portfolio '%s' - Error #002", selectedPortfolioStock, selectedPortfolio);
 			log.error(msg);
@@ -204,11 +263,11 @@ public class StockController extends StockFxBorderPaneController {
 
 		try {
 			PortfolioStock portfolioStock = MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio().newStock(symbol, company);
-			MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio().addStockToSelectedPortfolio(portfolioStock);
-			// portfolioStock.setPortfolioid(MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelected());
-			// Pretty sure don't need addStockToSelectedPortfolio() as the JPA mappedBy handles that
-			// MainApplication.getModelFactory().getPortfoliosModel().addStockToSelectedPortfolio(portfolioStock);
-			MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio().setSelected(portfolioStock);
+			StocksModel selectedStockModel = MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio(); 
+			selectedStockModel.addStockToSelectedPortfolio(portfolioStock);
+			selectedStockModel.updateStockList(portfolioStock);
+			// The JPA mappedBy and cascade policy handles updating the other side of this relationship
+			selectedStockModel.setSelected(portfolioStock);
 			MainApplication.getAppFactory().getTabManager().selectTab(TabStandardNames.Portfolios.name());
 		} catch (StockFxPersistenceException e) {
 			String msg = String.format("Error adding new stock with symbol '%s' company '%s' - Error #004 - Perhaps this stock already exists", symbol, company, portfolio);
@@ -223,7 +282,7 @@ public class StockController extends StockFxBorderPaneController {
 		String company = StringUtils.isNotNullEmpty(newStockCompanyText) ? newStockCompanyText.getText() : "";
 		StocksModel stocksModel = MainApplication.getModelFactory().getStocksModelFromSelectedPortfolio();
 		try {
-			stocksModel.updateSelected(symbol,company);
+			stocksModel.updateSelected(symbol, company);
 			MainApplication.getAppFactory().getTabManager().selectTab(TabStandardNames.Portfolios.name());
 		} catch (StockFxPersistenceException e) {
 			Portfolio portfolio = MainApplication.getModelFactory().getPortfoliosModelFromSelectedCollection().getSelected();
@@ -237,13 +296,11 @@ public class StockController extends StockFxBorderPaneController {
 	@Override
 	public void newEntity() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void deleteSelectedEntity() {
 		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -266,6 +323,5 @@ public class StockController extends StockFxBorderPaneController {
 	@Override
 	public void controllerDocumentDeselected() {
 		// TODO Auto-generated method stub
-
 	}
 }
